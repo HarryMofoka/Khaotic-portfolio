@@ -1,0 +1,283 @@
+/* ==========================================================================
+ * KHAOTIC Portfolio — Global Styles
+ * ==========================================================================
+ * This file contains all global CSS including:
+ *   - TailwindCSS v4 import
+ *   - Custom theme tokens (fonts, colors, animations)
+ *   - Noise texture overlay
+ *   - Custom cursor styles
+ *   - Lenis smooth-scroll overrides
+ *   - Film-card styling
+ *   - Menu hover effects
+ *   - Light-mode theme overrides
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * 1. TailwindCSS v4 — Core import
+ * -------------------------------------------------------------------------- */
+@import "tailwindcss";
+
+/* --------------------------------------------------------------------------
+ * 2. Custom Theme Tokens
+ * --------------------------------------------------------------------------
+ * We define design tokens via @theme so TailwindCSS utility classes (e.g.
+ * `font-sans`, `text-accent`, `animate-blob`) map to our custom values.
+ * -------------------------------------------------------------------------- */
+@theme {
+  /* Font families —
+     "sans"    → Inter (clean body text)
+     "display" → Rock Salt (messy handwritten headings)
+     "mono"    → Inter used as monospace fallback */
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Rock Salt", cursive;
+  --font-mono: "Inter", monospace;
+
+  /* Semantic colour palette —
+     bg        → page background (near-black)
+     surface   → card / elevated surfaces
+     accent    → primary action / highlight colour (vivid orange-red)
+     secondary → muted text */
+  --color-bg: #050505;
+  --color-surface: #0f0f0f;
+  --color-accent: #ff3d00;
+  --color-secondary: #888888;
+
+  /* Extra tight letter-spacing values */
+  --tracking-tighter: -0.04em;
+  --tracking-tightest: -0.08em;
+
+  /* Blob animation used by background atmospheric orbs */
+  --animate-blob: blob 15s infinite;
+
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * 3. Base Element Styles
+ * -------------------------------------------------------------------------- */
+body {
+  background-color: #050505;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* --------------------------------------------------------------------------
+ * 4. Noise Texture Overlay
+ * --------------------------------------------------------------------------
+ * A fixed, full-viewport SVG noise pattern layered on top of everything
+ * (pointer-events: none) to give the page a subtle film-grain look.
+ * -------------------------------------------------------------------------- */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+ * 5. Custom Cursor
+ * --------------------------------------------------------------------------
+ * A small accent-coloured dot that smoothly follows the mouse pointer.
+ * When hovering over interactive elements it expands into an organic blob
+ * shape using mix-blend-mode for a visually striking inversion effect.
+ * -------------------------------------------------------------------------- */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  background-color: #ff3d00;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.3s;
+  mix-blend-mode: exclusion;
+}
+
+/* Expanded cursor state — triggered by adding `.hovered` class */
+.custom-cursor.hovered {
+  width: 60px;
+  height: 60px;
+  background-color: #ffffff;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  mix-blend-mode: difference;
+}
+
+/* --------------------------------------------------------------------------
+ * 6. Lenis Smooth-Scroll Overrides
+ * -------------------------------------------------------------------------- */
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+ * 7. Film Card
+ * --------------------------------------------------------------------------
+ * Polaroid / film-still aesthetic for project cards — dark background with
+ * a strong box-shadow and a faint border to pop against the dark page.
+ * -------------------------------------------------------------------------- */
+.film-card {
+  background: #000;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+ * 8. Text Outline Utility
+ * --------------------------------------------------------------------------
+ * Renders text as a transparent-fill stroke outline.
+ * -------------------------------------------------------------------------- */
+.text-outline {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+  color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+ * 9. Scrollbar — Hidden
+ * -------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+ * 10. Menu Link Hover Effect
+ * --------------------------------------------------------------------------
+ * On hover the clean font text slides up and a "Rock Salt" handwritten
+ * duplicate (pulled from `data-text`) slides in from below with an accent
+ * colour and a slight rotation — reinforcing the "distortion" brand.
+ * -------------------------------------------------------------------------- */
+.menu-link-hover {
+  position: relative;
+  overflow: hidden;
+  padding: 0.2em 0;
+}
+
+.menu-link-hover::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  color: #ff3d00;
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: "Rock Salt", cursive;
+  /* Scale down because Rock Salt renders much larger than Inter */
+  font-size: 0.6em;
+  transform: rotate(-2deg);
+  line-height: 1.5;
+}
+
+.menu-link-hover:hover::after {
+  top: 0;
+}
+
+.menu-link-hover span {
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menu-link-hover:hover span {
+  transform: translateY(-100%);
+}
+
+/* --------------------------------------------------------------------------
+ * 11. Loader Clip-Path
+ * --------------------------------------------------------------------------
+ * Ensures the loader covers the full viewport before animating away.
+ * -------------------------------------------------------------------------- */
+#loader {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+/* ==========================================================================
+ * 12. Light-Mode Theme Overrides
+ * ==========================================================================
+ * When `body.light-mode` is toggled, these rules invert the palette from
+ * dark-on-light to light-on-dark while preserving accent colours.
+ * ========================================================================== */
+body.light-mode {
+  background-color: #e4e4e7 !important;
+  color: #18181b !important;
+}
+
+body.light-mode .film-card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .text-white {
+  color: #18181b !important;
+}
+
+body.light-mode .text-white\/70 {
+  color: rgba(24, 24, 27, 0.7) !important;
+}
+
+body.light-mode .text-white\/50 {
+  color: rgba(24, 24, 27, 0.5) !important;
+}
+
+body.light-mode .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .bg-black {
+  background-color: #f4f4f5 !important;
+}
+
+body.light-mode #menu-overlay {
+  background-color: #f4f4f5 !important;
+}
+
+body.light-mode #nav-logo {
+  color: #18181b !important;
+}
+
+body.light-mode .text-outline {
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.3);
+}
+
+body.light-mode #loader {
+  background-color: #f4f4f5 !important;
+  color: #18181b !important;
+}
+
+body.light-mode .text-gray-400 {
+  color: #52525b !important;
+}
