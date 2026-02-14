@@ -41,4 +41,6 @@ export interface Project {
     description: string;
     credits: Credit[];
     rotation: string;
+    /** Optional video URL that plays on card hover (Phase 2A) */
+    hoverVideo?: string;
 }
