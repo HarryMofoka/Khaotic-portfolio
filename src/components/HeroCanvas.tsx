@@ -26,7 +26,7 @@
  *   None — this component is self-contained and manages its own animation.
  * ========================================================================== */
 
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef } from "react";
 
 /* ==========================================================================
  * Simplex Noise — Embedded Implementation
@@ -235,61 +235,22 @@ const HeroCanvas: React.FC = () => {
      * We multiply by devicePixelRatio for crisp rendering on retina displays,
      * then scale the context so we can draw in CSS-pixel coordinates.
      * ----------------------------------------------------------------------- */
-    const resizeCanvas = useCallback(() => {
-        const canvas = canvasRef.current;
-        const container = containerRef.current;
-        if (!canvas || !container) return;
-
-        const dpr = window.devicePixelRatio || 1;
-        const rect = container.getBoundingClientRect();
-
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        canvas.style.width = `${rect.width}px`;
-        canvas.style.height = `${rect.height}px`;
-
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-            ctx.scale(dpr, dpr);
-            ctxRef.current = ctx;
-        }
-    }, []);
-
     /* -------------------------------------------------------------------------
-     * Main Effect — Set up canvas, mouse tracking, and animation loop.
+     * Main Effect — Set up canvas, resize handling, mouse tracking, and
+     * the animation loop. Everything is contained in one effect so that
+     * `animate` is in scope for both the loop and the resize-restart logic.
      * ----------------------------------------------------------------------- */
     useEffect(() => {
-        resizeCanvas();
-
-        /* ---- Mouse tracking ---- */
-        const handleMouseMove = (e: MouseEvent) => {
-            const rect = canvasRef.current?.getBoundingClientRect();
-            if (rect) {
-                mouseRef.current.x = e.clientX - rect.left;
-                mouseRef.current.y = e.clientY - rect.top;
-            }
-        };
-
-        const handleMouseLeave = () => {
-            /* Move mouse "off-screen" so there's no residual distortion */
-            mouseRef.current.x = -9999;
-            mouseRef.current.y = -9999;
-        };
-
-        const container = containerRef.current;
-        container?.addEventListener("mousemove", handleMouseMove);
-        container?.addEventListener("mouseleave", handleMouseLeave);
-
-        /* ---- Resize Observer ---- */
-        const resizeObserver = new ResizeObserver(() => resizeCanvas());
-        if (container) resizeObserver.observe(container);
-
         /* ---- Animation Loop ---- */
         const animate = () => {
             const ctx = ctxRef.current;
             const canvas = canvasRef.current;
             if (!ctx || !canvas) {
-                rafRef.current = requestAnimationFrame(animate);
+                /* Early return WITHOUT scheduling another frame.
+                 * This prevents a tight spin of empty rAF callbacks.
+                 * The loop will be restarted by resizeCanvas once
+                 * the canvas context becomes available. */
+                rafRef.current = 0;
                 return;
             }
 
@@ -380,16 +341,67 @@ const HeroCanvas: React.FC = () => {
             rafRef.current = requestAnimationFrame(animate);
         };
 
-        rafRef.current = requestAnimationFrame(animate);
+        /* ---- Local resize helper ---- */
+        const resizeCanvas = () => {
+            const canvas = canvasRef.current;
+            const container = containerRef.current;
+            if (!canvas || !container) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            const rect = container.getBoundingClientRect();
+
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+                ctx.scale(dpr, dpr);
+                ctxRef.current = ctx;
+
+                /* If the animation loop stopped (because ctx was null),
+                 * restart it now that the context is available. */
+                if (!rafRef.current) {
+                    rafRef.current = requestAnimationFrame(animate);
+                }
+            }
+        };
+
+        /* ---- Mouse tracking ---- */
+        const handleMouseMove = (e: MouseEvent) => {
+            const rect = canvasRef.current?.getBoundingClientRect();
+            if (rect) {
+                mouseRef.current.x = e.clientX - rect.left;
+                mouseRef.current.y = e.clientY - rect.top;
+            }
+        };
+
+        const handleMouseLeave = () => {
+            mouseRef.current.x = -9999;
+            mouseRef.current.y = -9999;
+        };
+
+        const container = containerRef.current;
+        container?.addEventListener("mousemove", handleMouseMove);
+        container?.addEventListener("mouseleave", handleMouseLeave);
+
+        /* ---- Resize Observer ---- */
+        const resizeObserver = new ResizeObserver(() => resizeCanvas());
+        if (container) resizeObserver.observe(container);
+
+        /* Kick off initial resize (which also starts the animation loop) */
+        resizeCanvas();
 
         /* ---- Cleanup ---- */
         return () => {
             cancelAnimationFrame(rafRef.current);
+            rafRef.current = 0;
             container?.removeEventListener("mousemove", handleMouseMove);
             container?.removeEventListener("mouseleave", handleMouseLeave);
             resizeObserver.disconnect();
         };
-    }, [resizeCanvas]);
+    }, []);
 
     /* -------------------------------------------------------------------------
      * Render
