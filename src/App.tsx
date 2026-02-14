@@ -13,7 +13,9 @@
  *   │  ├─ Loader (intro loading screen)                     │
  *   │  ├─ Navbar (fixed top pill)                           │
  *   │  ├─ MenuOverlay (fullscreen nav)                      │
- *   │  ├─ <main> — Project Cards feed                       │
+ *   │  ├─ <main>                                            │
+ *   │  │   ├─ HeroCanvas (generative noise field)           │
+ *   │  │   └─ Project Cards feed                            │
  *   │  ├─ Footer                                            │
  *   │  └─ ProjectModal (detail view)                        │
  *   └───────────────────────────────────────────────────────┘
@@ -47,6 +49,7 @@ import MenuOverlay from "./components/MenuOverlay";
 import ProjectCard from "./components/ProjectCard";
 import ProjectModal from "./components/ProjectModal";
 import Footer from "./components/Footer";
+import HeroCanvas from "./components/HeroCanvas";
 
 /* ---- Hooks ---- */
 import { useLenis } from "./hooks/useLenis";
@@ -256,8 +259,8 @@ const App: React.FC = () => {
        * navbar has room.
        * ============================================================== */}
             <main className="relative z-10 w-full flex flex-col items-center pb-32">
-                {/* Top spacer — clears the navbar area */}
-                <div className="h-[30vh] md:h-[40vh] w-full relative flex flex-col items-center justify-center" />
+                {/* Hero — Interactive generative noise canvas */}
+                <HeroCanvas />
 
                 {/* Render one ProjectCard per entry in the data array */}
                 {PROJECTS.map((project, index) => (
