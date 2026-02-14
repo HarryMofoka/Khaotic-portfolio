@@ -299,6 +299,27 @@ html.lenis {
       rgb(0, 0, 0) 100%);
 }
 
+/* --------------------------------------------------------------------------
+ * 14. Skills Marquee Animation (Phase 3C)
+ * -------------------------------------------------------------------------- */
+.skills-marquee {
+  animation: marquee-scroll 20s linear infinite;
+}
+
+.skills-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 /* ==========================================================================
  * 12. Light-Mode Theme Overrides
  * ==========================================================================

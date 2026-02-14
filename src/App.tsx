@@ -14,8 +14,11 @@
  *   │  ├─ Navbar (fixed top pill)                           │
  *   │  ├─ MenuOverlay (fullscreen nav)                      │
  *   │  ├─ <main>                                            │
+ *   │  │   ├─ Annotations (scattered handwritten notes)      │
  *   │  │   ├─ HeroCanvas (generative noise field)           │
- *   │  │   └─ Project Cards feed                            │
+ *   │  │   ├─ Project Cards feed                            │
+ *   │  │   ├─ TheLab (experiments section)                  │
+ *   │  │   └─ AboutCreator ("The Creator" section)          │
  *   │  ├─ Footer                                            │
  *   │  └─ ProjectModal (detail view)                        │
  *   └───────────────────────────────────────────────────────┘
@@ -50,6 +53,9 @@ import ProjectCard from "./components/ProjectCard";
 import ProjectModal from "./components/ProjectModal";
 import Footer from "./components/Footer";
 import HeroCanvas from "./components/HeroCanvas";
+import TheLab from "./components/TheLab";
+import Annotations from "./components/Annotations";
+import AboutCreator from "./components/AboutCreator";
 
 /* ---- Hooks ---- */
 import { useLenis } from "./hooks/useLenis";
@@ -259,6 +265,9 @@ const App: React.FC = () => {
        * navbar has room.
        * ============================================================== */}
             <main className="relative z-10 w-full flex flex-col items-center pb-32">
+                {/* Handwritten annotations — scattered on desktop only */}
+                <Annotations />
+
                 {/* Hero — Interactive generative noise canvas */}
                 <HeroCanvas />
 
@@ -271,6 +280,12 @@ const App: React.FC = () => {
                         onClick={() => handleProjectOpen(index)}
                     />
                 ))}
+
+                {/* Phase 3A — The Lab experiments section */}
+                <TheLab />
+
+                {/* Phase 3C — About: The Creator */}
+                <AboutCreator />
             </main>
 
             {/* ================================================================
