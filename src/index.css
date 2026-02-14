@@ -224,6 +224,68 @@ html.lenis {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
 }
 
+/* --------------------------------------------------------------------------
+ * 12. Glitch Text Effect (Phase 1B)
+ * --------------------------------------------------------------------------
+ * A CSS-only glitch animation on hover. Two pseudo-elements duplicate the
+ * text (from data-text attr), each clipped to a different vertical slice
+ * and shifted horizontally with opposite offsets + accent colour tint.
+ * -------------------------------------------------------------------------- */
+.glitch-text {
+  position: relative;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.glitch-text:hover::before,
+.glitch-text:hover::after {
+  opacity: 0.8;
+  animation: glitch-shift 0.3s steps(2) infinite;
+}
+
+.glitch-text::before {
+  color: #ff3d00;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+}
+
+.glitch-text::after {
+  color: #00d4ff;
+  clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+}
+
+@keyframes glitch-shift {
+  0% {
+    transform: translate(0);
+  }
+
+  25% {
+    transform: translate(-3px, 1px);
+  }
+
+  50% {
+    transform: translate(3px, -1px);
+  }
+
+  75% {
+    transform: translate(-2px, -1px);
+  }
+
+  100% {
+    transform: translate(2px, 1px);
+  }
+}
+
 /* ==========================================================================
  * 12. Light-Mode Theme Overrides
  * ==========================================================================

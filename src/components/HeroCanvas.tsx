@@ -27,6 +27,10 @@
  * ========================================================================== */
 
 import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /* ==========================================================================
  * Simplex Noise — Embedded Implementation
@@ -404,29 +408,158 @@ const HeroCanvas: React.FC = () => {
     }, []);
 
     /* -------------------------------------------------------------------------
+     * Ref for the letter container — animated by GSAP ScrollTrigger
+     * ----------------------------------------------------------------------- */
+    const lettersRef = useRef<HTMLDivElement>(null);
+    const taglineRef = useRef<HTMLParagraphElement>(null);
+
+    /* -------------------------------------------------------------------------
+     * Phase 1B — Scroll-Driven Fragmented Name Assembly
+     *
+     * On mount, each letter of "HARRY MOFOKA" is scattered to a random
+     * position with rotation and zero opacity. As the user scrolls,
+     * GSAP ScrollTrigger assembles them back to their natural position.
+     * The tagline fades in after the letters settle.
+     * ----------------------------------------------------------------------- */
+    useEffect(() => {
+        const letters = lettersRef.current?.querySelectorAll(".hero-letter");
+        if (!letters || letters.length === 0) return;
+
+        /* Scatter each letter to a random offset */
+        letters.forEach((letter) => {
+            gsap.set(letter, {
+                x: gsap.utils.random(-300, 300),
+                y: gsap.utils.random(-200, 200),
+                rotation: gsap.utils.random(-45, 45),
+                opacity: 0,
+                scale: gsap.utils.random(0.5, 1.8),
+            });
+        });
+
+        /* Also hide the tagline initially */
+        gsap.set(taglineRef.current, { opacity: 0, y: 20 });
+
+        /* Assemble letters on scroll */
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top 80%",
+                end: "center center",
+                scrub: 1.2,
+            },
+        });
+
+        tl.to(letters, {
+            x: 0,
+            y: 0,
+            rotation: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 1,
+            stagger: 0.05,
+            ease: "power3.out",
+        });
+
+        /* Fade in tagline after letters assemble */
+        tl.to(
+            taglineRef.current,
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: "power2.out",
+            },
+            "-=0.3"
+        );
+
+        return () => {
+            tl.scrollTrigger?.kill();
+            tl.kill();
+        };
+    }, []);
+
+    /* -------------------------------------------------------------------------
+     * Phase 1B — Name string split into individual characters.
+     * The space between "HARRY" and "MOFOKA" is preserved as a wider gap.
+     * ----------------------------------------------------------------------- */
+    const NAME = "HARRY MOFOKA";
+
+    /* -------------------------------------------------------------------------
      * Render
      *
-     * The component renders a positioned container that matches the original
-     * hero spacer dimensions (30vh on mobile, 40vh on desktop). The canvas
-     * fills this container absolutely. Content can still be layered on top
-     * via z-index for the future Phase 1B (name reveal).
+     * Structure:
+     *   container (60–70vh)
+     *     ├─ <canvas>              — generative noise (1A)
+     *     ├─ letter fragments      — "HARRY MOFOKA" (1B)
+     *     ├─ tagline               — "curated chaos" with glitch hover (1B)
+     *     └─ bottom gradient       — smooth fade into project cards (1C)
      * ----------------------------------------------------------------------- */
     return (
         <div
             ref={containerRef}
-            className="h-[30vh] md:h-[40vh] w-full relative flex flex-col items-center justify-center overflow-hidden"
+            className="h-[60vh] md:h-[70vh] w-full relative flex flex-col items-center justify-center overflow-hidden"
         >
-            {/* The generative noise canvas — absolute fill, behind any text */}
+            {/* The generative noise canvas — absolute fill, behind all text */}
             <canvas
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full"
                 style={{ display: "block" }}
             />
 
-            {/* Subtle tagline — positioned over the noise field */}
-            <p className="relative z-10 font-display text-sm md:text-base text-white/20 tracking-widest rotate-[-1deg] select-none pointer-events-none">
+            {/* ============================================================
+             * Phase 1B — Fragmented Name Reveal
+             * ============================================================
+             * Each letter is an inline-block span. GSAP scatters them on
+             * mount and assembles them on scroll. The handwritten font
+             * (font-display = Rock Salt) reinforces the "khaotic" brand.
+             * ============================================================ */}
+            <div
+                ref={lettersRef}
+                className="relative z-10 flex flex-wrap items-center justify-center select-none pointer-events-none"
+            >
+                {NAME.split("").map((char, i) =>
+                    char === " " ? (
+                        /* Preserve natural word gap */
+                        <span key={`space-${i}`} className="w-4 md:w-6" />
+                    ) : (
+                        <span
+                            key={`${char}-${i}`}
+                            className="hero-letter inline-block text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display text-white font-bold will-change-transform"
+                        >
+                            {char}
+                        </span>
+                    )
+                )}
+            </div>
+
+            {/* ============================================================
+             * Phase 1B — Tagline with Glitch Hover
+             * ============================================================
+             * "curated chaos" in the handwritten font. On hover it plays a
+             * CSS-only glitch effect via the glitch-text class.
+             * ============================================================ */}
+            <p
+                ref={taglineRef}
+                className="relative z-10 mt-4 md:mt-6 font-display text-sm md:text-base text-white/30 tracking-[0.3em] uppercase cursor-pointer transition-colors hover:text-[#FF3D00]/60 glitch-text"
+                data-text="curated chaos"
+            >
                 curated chaos
             </p>
+
+            {/* ============================================================
+             * Phase 1C — Bottom Gradient Fade
+             * ============================================================
+             * A gradient overlay at the bottom of the hero that fades from
+             * transparent to the page background colour, creating a smooth
+             * visual transition into the first project card below.
+             * ============================================================ */}
+            <div
+                className="absolute bottom-0 left-0 w-full h-32 md:h-48 pointer-events-none z-20"
+                style={{
+                    background:
+                        "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 50%, rgb(0,0,0) 100%)",
+                }}
+            />
         </div>
     );
 };
