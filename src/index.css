@@ -286,6 +286,19 @@ html.lenis {
   }
 }
 
+/* --------------------------------------------------------------------------
+ * 13. Hero Gradient Fade (Phase 1C)
+ * --------------------------------------------------------------------------
+ * Fades the bottom of the hero section into the page background.
+ * Overridden in light mode below.
+ * -------------------------------------------------------------------------- */
+.hero-fade {
+  background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.6) 50%,
+      rgb(0, 0, 0) 100%);
+}
+
 /* ==========================================================================
  * 12. Light-Mode Theme Overrides
  * ==========================================================================
@@ -342,4 +355,15 @@ body.light-mode #loader {
 
 body.light-mode .text-gray-400 {
   color: #52525b !important;
+}
+
+body.light-mode .hero-fade {
+  background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(244, 244, 245, 0.6) 50%,
+      rgb(244, 244, 245) 100%);
+}
+
+body.light-mode .hero-letter {
+  color: #18181b !important;
 }
