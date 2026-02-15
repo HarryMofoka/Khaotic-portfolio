@@ -23,6 +23,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
     const overlayRef = useRef<HTMLDivElement>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const menuItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
+    const [isAnimating, setIsAnimating] = React.useState(false);
 
     /* -------------------------------------------------------------------------
      * GSAP Entrance / Exit Animations
@@ -31,7 +32,10 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
         if (!overlayRef.current) return;
 
         if (isOpen) {
-            const tl = gsap.timeline();
+            setIsAnimating(true);
+            const tl = gsap.timeline({
+                onComplete: () => setIsAnimating(false)
+            });
             tl.set(overlayRef.current, { visibility: "visible", display: "flex" })
                 .to(overlayRef.current, { opacity: 1, duration: 0.6, ease: "power2.out" })
                 .fromTo(menuItemsRef.current.filter(Boolean),
@@ -40,6 +44,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
                     "-=0.3"
                 );
         } else {
+            setIsAnimating(true);
             gsap.to(overlayRef.current, {
                 opacity: 0,
                 duration: 0.4,
@@ -49,6 +54,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
                         overlayRef.current.style.visibility = "hidden";
                         overlayRef.current.style.display = "none";
                     }
+                    setIsAnimating(false);
                 }
             });
         }
@@ -89,7 +95,8 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
     return (
         <div
             ref={overlayRef}
-            className={`fixed inset-0 z-[500] bg-[var(--color-bg)]/98 backdrop-blur-3xl flex flex-col ${isOpen ? 'pointer-events-auto' : 'pointer-events-none opacity-0 invisible overflow-hidden'}`}
+            className={`fixed inset-0 z-[500] bg-[var(--color-bg)]/98 backdrop-blur-3xl flex flex-col ${isOpen || isAnimating ? 'pointer-events-auto' : 'pointer-events-none'}`}
+            style={{ opacity: 0, visibility: 'hidden', display: 'none' }}
         >
             {/* Close Button - Explicit Toggle */}
             <button
@@ -141,14 +148,11 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
                         <div className="flex flex-col gap-4">
                             <span className="font-sans text-[10px] uppercase tracking-widest text-[var(--color-accent)]">Manifesto</span>
                             <div className="flex gap-6 justify-start md:justify-end">
-                                <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
-                                    <Icon icon="lucide:instagram" width={24} />
+                                <a href="https://www.instagram.com/kalm.harry/" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
+                                    <Icon icon="simple-icons:instagram" width={24} />
                                 </a>
-                                <a href="https://behance.net" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
-                                    <Icon icon="lucide:behance" width={24} />
-                                </a>
-                                <a href="https://github.com" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
-                                    <Icon icon="lucide:github" width={24} />
+                                <a href="https://github.com/HarryMofoka" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
+                                    <Icon icon="simple-icons:github" width={24} />
                                 </a>
                             </div>
                         </div>

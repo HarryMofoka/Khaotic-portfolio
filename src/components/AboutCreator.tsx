@@ -160,7 +160,7 @@ const AboutCreator: React.FC = () => {
                     {/* Contact CTA */}
                     <div className="flex flex-wrap items-center gap-6 mt-4">
                         <a
-                            href="mailto:error404@harrymofoka.com"
+                            href="mailto:mofokaharry@gmail.com"
                             className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-[0.2em] text-[var(--color-accent)] hover:text-[var(--color-text)] transition-colors duration-300 nav-link"
                         >
                             <span>Get in touch</span>
@@ -177,7 +177,7 @@ const AboutCreator: React.FC = () => {
                         </a>
 
                         <a
-                            href="https://www.linkedin.com/in/harry-mofoka"
+                            href="https://www.linkedin.com/in/HarryMofoka"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-sans text-[10px] uppercase tracking-[0.2em] text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors"

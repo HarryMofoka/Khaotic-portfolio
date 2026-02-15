@@ -31,6 +31,7 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Link } from "react-router-dom";
 
 /* Ensure ScrollTrigger is registered */
 gsap.registerPlugin(ScrollTrigger);
@@ -199,14 +200,16 @@ const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {/* ---- CENTER: Brand Logo ---- */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 nav-link cursor-pointer h-full flex items-center justify-center">
-                    <h1
-                        ref={logoRef}
-                        id="nav-logo"
-                        className="antialiased origin-center whitespace-nowrap text-xl font-extrabold text-[var(--color-text)] tracking-tight font-display pt-2"
-                    >
-                        KHAOTIC
-                    </h1>
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 nav-link h-full flex items-center justify-center">
+                    <Link to="/" className="cursor-pointer">
+                        <h1
+                            ref={logoRef}
+                            id="nav-logo"
+                            className="antialiased origin-center whitespace-nowrap text-xl font-extrabold text-[var(--color-text)] tracking-tight font-display pt-2"
+                        >
+                            KHAOTIC
+                        </h1>
+                    </Link>
                 </div>
 
                 {/* ---- RIGHT: Meta Info ---- */}

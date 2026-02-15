@@ -47,7 +47,9 @@ interface ProjectModalProps {
 }
 
 const ProjectModal: React.FC<ProjectModalProps> = ({ isVisible, projectIndex, onClose }) => {
-    const project = projectIndex !== null ? PROJECTS[projectIndex] : null;
+    const project = (projectIndex !== null && projectIndex >= 0 && projectIndex < PROJECTS.length)
+        ? PROJECTS[projectIndex]
+        : null;
     /* -------------------------------------------------------------------------
      * Refs
      * ----------------------------------------------------------------------- */

@@ -2,9 +2,9 @@ import React from "react";
 import { Icon } from "@iconify/react";
 
 const CONTACT_LINKS = [
-    { label: "Email", value: "admin@nexlink.co.za", icon: "lucide:mail", href: "mailto:admin@nexlink.co.za" },
-    { label: "Instagram", value: "@khaotic.dev", icon: "lucide:instagram", href: "https://instagram.com/khaotic.dev" },
-    { label: "GitHub", value: "harry-mofoka", icon: "lucide:github", href: "https://github.com/harry-mofoka" }
+    { label: "Email", value: "mofokaharry@gmail.com", icon: "simple-icons:gmail", href: "mailto:mofokaharry@gmail.com" },
+    { label: "Instagram", value: "@kalm.harry", icon: "simple-icons:instagram", href: "https://www.instagram.com/kalm.harry/" },
+    { label: "GitHub", value: "HarryMofoka", icon: "simple-icons:github", href: "https://github.com/HarryMofoka" }
 ];
 
 const ContactPage: React.FC = () => {
@@ -26,21 +26,24 @@ const ContactPage: React.FC = () => {
                     <div className="space-y-4">
                         <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-[var(--color-accent)] block mb-8">Initiate Contact</span>
                         <div className="flex flex-col gap-8 md:gap-12">
-                            {CONTACT_LINKS.map((link) => (
-                                <a
-                                    key={link.label}
-                                    href={link.href}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="group flex items-center justify-between border-b border-[var(--color-border)] pb-8 hover:border-[var(--color-accent)] transition-colors"
-                                >
-                                    <div className="flex flex-col">
-                                        <span className="font-mono text-[10px] uppercase text-[var(--color-text-dim)] mb-2">{link.label}</span>
-                                        <span className="font-display text-2xl md:text-4xl text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">{link.value}</span>
-                                    </div>
-                                    <Icon icon={link.icon} className="text-4xl text-[var(--color-border)] group-hover:text-[var(--color-accent)] transition-all group-hover:rotate-12" />
-                                </a>
-                            ))}
+                            {CONTACT_LINKS.map((link) => {
+                                const isMail = link.href?.startsWith('mailto:');
+                                return (
+                                    <a
+                                        key={link.label}
+                                        href={link.href}
+                                        target={isMail ? undefined : "_blank"}
+                                        rel={isMail ? undefined : "noopener noreferrer"}
+                                        className="group flex items-center justify-between border-b border-[var(--color-border)] pb-8 hover:border-[var(--color-accent)] transition-colors"
+                                    >
+                                        <div className="flex flex-col">
+                                            <span className="font-mono text-[10px] uppercase text-[var(--color-text-dim)] mb-2">{link.label}</span>
+                                            <span className="font-display text-2xl md:text-4xl text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">{link.value}</span>
+                                        </div>
+                                        <Icon icon={link.icon} className="text-4xl text-[var(--color-border)] group-hover:text-[var(--color-accent)] transition-all group-hover:rotate-12" />
+                                    </a>
+                                );
+                            })}
                         </div>
                     </div>
 

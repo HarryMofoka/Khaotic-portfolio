@@ -68,15 +68,17 @@ const App: React.FC = () => {
             infinite: false,
         });
 
+        let rafId: number;
         function raf(time: number) {
             lenisRef.current?.raf(time);
-            requestAnimationFrame(raf);
+            rafId = requestAnimationFrame(raf);
         }
 
-        requestAnimationFrame(raf);
+        rafId = requestAnimationFrame(raf);
 
         return () => {
             lenisRef.current?.destroy();
+            cancelAnimationFrame(rafId);
         };
     }, []);
 
