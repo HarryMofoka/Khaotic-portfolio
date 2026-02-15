@@ -168,11 +168,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
             >
                 {/* ==== Hero Image (80vh) ==== */}
                 <div className="w-full h-[80vh] relative">
-                    <img
-                        src={project?.modalImage ?? ""}
-                        alt={project?.title ?? ""}
-                        className="w-full h-full object-cover"
-                    />
+                    {project?.modalImage && (
+                        <img
+                            src={project.modalImage}
+                            alt={project.title}
+                            className="w-full h-full object-cover"
+                        />
+                    )}
                     {/* Gradient overlay fading to background colour at bottom */}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-90" />
 

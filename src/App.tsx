@@ -308,7 +308,7 @@ const App: React.FC = () => {
             />
 
             {/* Phase 4D — Ambient Sound Toggle */}
-            <AmbientSound />
+            <AmbientSound isMenuOpen={isMenuOpen} />
         </div>
     );
 };

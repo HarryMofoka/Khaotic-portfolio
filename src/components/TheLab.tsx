@@ -133,11 +133,12 @@ const TheLab: React.FC = () => {
                     <div
                         key={exp.title}
                         className={`lab-card group relative p-6 rounded-sm border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.05] transition-all duration-500 cursor-pointer ${i === 0
-                                ? "sm:col-span-2 lg:col-span-2"
-                                : ""
+                            ? "sm:col-span-2 lg:col-span-2"
+                            : ""
                             }`}
                         style={{
-                            transform: `rotate(${(Math.random() - 0.5) * 2}deg)`,
+                            /* Use a stable random seed based on index to prevent shifts on re-render */
+                            transform: `rotate(${((i * 123) % 4) - 2}deg)`,
                         }}
                     >
                         {/* Status badge */}

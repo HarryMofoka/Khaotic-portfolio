@@ -16,7 +16,7 @@
  *   <button onClick={cycleMood}>{mood}</button>
  * ========================================================================== */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 /** All available mood/theme names */
 export const MOODS = ["default", "light", "midnight", "ember"] as const;
@@ -29,7 +29,13 @@ export type Mood = (typeof MOODS)[number];
  * `light-mode` class for backward compatibility.
  */
 export function useMood() {
-    const [mood, setMoodState] = useState<Mood>("default");
+    const [mood, setMoodState] = useState<Mood>(() => {
+        if (typeof window !== "undefined") {
+            const saved = localStorage.getItem("khaotic-mood") as Mood;
+            return MOODS.includes(saved) ? saved : "default";
+        }
+        return "default";
+    });
 
     /**
      * setMood — Apply a specific mood.
@@ -44,6 +50,7 @@ export function useMood() {
         }
 
         document.body.setAttribute("data-mood", newMood);
+        localStorage.setItem("khaotic-mood", newMood);
         setMoodState(newMood);
     }, []);
 
@@ -61,9 +68,19 @@ export function useMood() {
                 document.body.classList.add("light-mode");
             }
             document.body.setAttribute("data-mood", next);
+            localStorage.setItem("khaotic-mood", next);
 
             return next;
         });
+    }, []);
+
+    /* Initial effect to apply mood on mount */
+    useEffect(() => {
+        document.body.classList.remove("light-mode");
+        if (mood === "light") {
+            document.body.classList.add("light-mode");
+        }
+        document.body.setAttribute("data-mood", mood);
     }, []);
 
     /** Whether current mood is a light-background mood */

@@ -13,15 +13,25 @@
  * Respects user preference — audio never auto-plays.
  * ========================================================================== */
 
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
+
+interface AmbientSoundProps {
+    /** Whether the menu overlay is currently open */
+    isMenuOpen?: boolean;
+}
 
 /**
  * AmbientSound — Opt-in ambient audio toggle.
  */
-const AmbientSound: React.FC = () => {
+const AmbientSound: React.FC<AmbientSoundProps> = ({ isMenuOpen = false }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioCtxRef = useRef<AudioContext | null>(null);
     const gainRef = useRef<GainNode | null>(null);
+
+    /* Refs for filters and gain stages to allow real-time modulation */
+    const filterRef = useRef<BiquadFilterNode | null>(null);
+    const oscGainRef = useRef<GainNode | null>(null);
+    const osc2GainRef = useRef<GainNode | null>(null);
 
     /* -------------------------------------------------------------------------
      * createAmbientAudio — Builds the audio graph on first play.
@@ -41,6 +51,7 @@ const AmbientSound: React.FC = () => {
         osc.connect(oscGain);
         oscGain.connect(masterGain);
         osc.start();
+        oscGainRef.current = oscGain;
 
         /* Second harmonic for warmth */
         const osc2 = ctx.createOscillator();
@@ -51,6 +62,7 @@ const AmbientSound: React.FC = () => {
         osc2.connect(osc2Gain);
         osc2Gain.connect(masterGain);
         osc2.start();
+        osc2GainRef.current = osc2Gain;
 
         /* Brown noise — filtered white noise */
         const bufferSize = 2 * ctx.sampleRate;
@@ -70,6 +82,7 @@ const AmbientSound: React.FC = () => {
         const noiseFilter = ctx.createBiquadFilter();
         noiseFilter.type = "lowpass";
         noiseFilter.frequency.value = 200;
+        filterRef.current = noiseFilter;
 
         const noiseGain = ctx.createGain();
         noiseGain.gain.value = 0.06;
@@ -84,6 +97,30 @@ const AmbientSound: React.FC = () => {
 
         return { ctx, masterGain };
     }, []);
+
+    /* -------------------------------------------------------------------------
+     * Effect: Audio Muffling (Menu Interaction)
+     * When the menu is open, we lower the cut-off frequency and dim the drones.
+     * ----------------------------------------------------------------------- */
+    useEffect(() => {
+        if (!isPlaying || !audioCtxRef.current) return;
+        const ctx = audioCtxRef.current;
+        const filter = filterRef.current;
+        const og1 = oscGainRef.current;
+        const og2 = osc2GainRef.current;
+
+        if (isMenuOpen) {
+            /* Muffled State */
+            filter?.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.8);
+            og1?.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 0.8);
+            og2?.gain.linearRampToValueAtTime(0.02, ctx.currentTime + 0.8);
+        } else {
+            /* Normal State */
+            filter?.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.8);
+            og1?.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.8);
+            og2?.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 0.8);
+        }
+    }, [isMenuOpen, isPlaying]);
 
     /* -------------------------------------------------------------------------
      * toggleSound — Start or stop the ambient audio with a smooth fade.
