@@ -89,7 +89,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
     return (
         <div
             ref={overlayRef}
-            className={`fixed inset-0 z-[100] bg-[var(--color-bg)]/98 backdrop-blur-3xl flex flex-col overflow-hidden ${isOpen ? 'pointer-events-auto' : 'pointer-events-none opacity-0 invisible'}`}
+            className={`fixed inset-0 z-[500] bg-[var(--color-bg)]/98 backdrop-blur-3xl flex flex-col ${isOpen ? 'pointer-events-auto' : 'pointer-events-none opacity-0 invisible overflow-hidden'}`}
         >
             {/* Close Button - Explicit Toggle */}
             <button
@@ -104,7 +104,8 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
             {/* Scrollable Content Area */}
             <div
                 ref={scrollContainerRef}
-                className="flex-1 w-full overflow-y-auto overflow-x-hidden pt-32 pb-48 px-6 md:px-24 overscroll-contain"
+                data-lenis-prevent
+                className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden pt-32 pb-48 px-6 md:px-24 overscroll-contain touch-pan-y"
             >
                 <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row gap-20 items-start">
 

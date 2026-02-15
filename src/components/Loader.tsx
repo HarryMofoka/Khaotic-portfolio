@@ -69,6 +69,9 @@ const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
                     yPercent: -100,
                     duration: 1.2,
                     ease: "power4.inOut",
+                    onStart: () => {
+                        loaderEl.style.pointerEvents = "none";
+                    }
                 });
             },
         });
@@ -128,7 +131,7 @@ const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
                     <span ref={statusRef}>Developing Khaos...</span>
                 </div>
                 <div>
-                    <span>©2024 HM</span>
+                    <span>©2026 HM</span>
                 </div>
             </div>
         </div>
