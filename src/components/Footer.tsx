@@ -86,10 +86,10 @@ const Footer: React.FC = () => {
                 <div className="flex flex-col gap-4">
                     <span className="text-[var(--color-text-dim)]/50">Get in touch</span>
                     <a
-                        href="mailto:error404@harrymofoka.com"
+                        href="mailto:mofokaharry@gmail.com"
                         className="text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors nav-link flex items-center gap-2 w-max font-medium"
                     >
-                        error404@harrymofoka.com
+                        mofokaharry@gmail.com
                     </a>
                 </div>
 
