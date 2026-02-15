@@ -59,7 +59,8 @@ import AboutCreator from "./components/AboutCreator";
 
 /* ---- Hooks ---- */
 import { useLenis } from "./hooks/useLenis";
-import { useTheme } from "./hooks/useTheme";
+import { useMood } from "./hooks/useMood";
+import AmbientSound from "./components/AmbientSound";
 
 /* ---- Data ---- */
 import { PROJECTS } from "./data/projects";
@@ -80,10 +81,10 @@ const App: React.FC = () => {
     const { lenisRef } = useLenis(false);
 
     /**
-     * useTheme — Light/dark theme toggle.
-     * `isLight` drives the Navbar icon; `toggle` swaps the body class.
+     * useMood — Multi-theme mood system (Phase 4C).
+     * `mood` is the current theme name; `cycleMood` rotates through them.
      */
-    const { isLight, toggle: toggleTheme } = useTheme();
+    const { isLight, cycleMood } = useMood();
 
     /* -----------------------------------------------------------------------
      * State
@@ -253,7 +254,7 @@ const App: React.FC = () => {
                 isMenuOpen={isMenuOpen}
                 onMenuToggle={handleMenuToggle}
                 isLight={isLight}
-                toggleTheme={toggleTheme}
+                toggleTheme={cycleMood}
             />
             <MenuOverlay isOpen={isMenuOpen} onClose={handleMenuClose} />
 
@@ -305,6 +306,9 @@ const App: React.FC = () => {
                 }
                 onClose={handleProjectClose}
             />
+
+            {/* Phase 4D — Ambient Sound Toggle */}
+            <AmbientSound />
         </div>
     );
 };

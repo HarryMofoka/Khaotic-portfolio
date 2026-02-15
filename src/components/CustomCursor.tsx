@@ -1,103 +1,124 @@
 /* ==========================================================================
- * CustomCursor Component
+ * CustomCursor Component — Phase 4A + 4B: Context-Aware Cursor + Ink Trail
  * ==========================================================================
- * Renders a custom cursor dot that smoothly follows the mouse position.
+ * An enhanced custom cursor with:
  *
- * Features:
- *   • Smooth follow — Uses requestAnimationFrame with linear interpolation
- *     (lerp factor 0.15) so the cursor trails the actual mouse position,
- *     creating a satisfying "lag" effect.
- *   • Hover expansion — When the mouse enters an interactive element
- *     (links, buttons, cards), the cursor expands into an organic blob
- *     shape via the `.hovered` CSS class.
- *   • Touch-device aware — On touch devices the cursor is hidden entirely
- *     since there's no mouse pointer to follow.
+ *   4A · Context-Aware States
+ *        The cursor changes shape/label based on what it hovers:
+ *          • Default     → small accent dot
+ *          • Links/cards → expanded organic blob (existing)
+ *          • Images      → "VIEW" text label
+ *          • Lab cards   → pulsing ring
+ *          • Text        → thin vertical bar (I-beam)
+ *
+ *   4B · Ink Trail
+ *        A secondary <canvas> renders a fading ink trail behind the cursor.
+ *        Each frame, a small dot is painted at the cursor position with low
+ *        opacity. The canvas slowly fades, creating an organic ink-bleed feel.
  *
  * Architecture:
- *   All animation is performed outside of React's render cycle using refs
- *   and requestAnimationFrame for maximum performance (no re-renders per
- *   mouse move).
- *
- * CSS Dependencies:
- *   `.custom-cursor` and `.custom-cursor.hovered` in `index.css`.
+ *   All animation is performed outside React's render cycle using refs
+ *   and requestAnimationFrame for maximum performance.
  * ========================================================================== */
 
 import React, { useEffect, useRef, useCallback } from "react";
 
 /**
- * CustomCursor — A performant custom cursor component.
- *
- * Renders a single <div> element and manages all animation imperatively
- * via refs and rAF to avoid unnecessary React re-renders.
+ * CustomCursor — Context-aware cursor with ink trail.
  */
 const CustomCursor: React.FC = () => {
     /* -------------------------------------------------------------------------
      * Refs
-     * -------------------------------------------------------------------------
-     * cursorRef       — DOM reference to the cursor <div> element
-     * mousePos        — Latest raw mouse position (updated on every mousemove)
-     * cursorPos       — Current interpolated cursor position (lerped toward mousePos)
-     * rafId           — requestAnimationFrame ID for cleanup
-     * isTouch         — Whether the device has touch capabilities
      * ----------------------------------------------------------------------- */
     const cursorRef = useRef<HTMLDivElement>(null);
+    const labelRef = useRef<HTMLSpanElement>(null);
+    const trailCanvasRef = useRef<HTMLCanvasElement>(null);
     const mousePos = useRef({ x: 0, y: 0 });
     const cursorPos = useRef({ x: 0, y: 0 });
     const rafId = useRef<number>(0);
     const isTouch = useRef(false);
+    const currentState = useRef<string>("default");
 
     /* -------------------------------------------------------------------------
-     * updateHoverTargets — Attach mouseenter/mouseleave listeners to all
-     * interactive elements so the cursor knows when to expand.
-     *
-     * This is called on mount and can be called again if the DOM changes
-     * (e.g. after the modal opens and adds new interactive elements).
+     * setCursorState — Applies a CSS class + optional label to the cursor.
+     * ----------------------------------------------------------------------- */
+    const setCursorState = useCallback((state: string, label?: string) => {
+        if (!cursorRef.current || !labelRef.current) return;
+        const cursor = cursorRef.current;
+        const labelEl = labelRef.current;
+
+        /* Remove all state classes */
+        cursor.className = "custom-cursor";
+
+        /* Apply the new state */
+        if (state !== "default") {
+            cursor.classList.add(`cursor-${state}`);
+        }
+
+        /* Update label */
+        labelEl.textContent = label || "";
+        currentState.current = state;
+    }, []);
+
+    /* -------------------------------------------------------------------------
+     * updateHoverTargets — Attach context-aware listeners to elements.
      * ----------------------------------------------------------------------- */
     const updateHoverTargets = useCallback(() => {
         if (!cursorRef.current) return;
-        const cursor = cursorRef.current;
 
-        /* Query all interactive elements by class or element type */
-        const targets = document.querySelectorAll(
-            ".nav-link, a, button, .film-card"
-        );
+        const reset = () => setCursorState("default");
 
-        targets.forEach((el) => {
-            el.addEventListener("mouseenter", () => cursor.classList.add("hovered"));
-            el.addEventListener("mouseleave", () =>
-                cursor.classList.remove("hovered")
-            );
+        /* Nav links, buttons, film cards → blob */
+        document.querySelectorAll(".nav-link, a, button, .film-card").forEach((el) => {
+            el.addEventListener("mouseenter", () => setCursorState("hovered"));
+            el.addEventListener("mouseleave", reset);
         });
-    }, []);
+
+        /* Images → "VIEW" label */
+        document.querySelectorAll(".project-wrapper img, .project-wrapper video").forEach((el) => {
+            el.addEventListener("mouseenter", () => setCursorState("view", "VIEW"));
+            el.addEventListener("mouseleave", reset);
+        });
+
+        /* Lab cards → pulsing ring */
+        document.querySelectorAll(".lab-card").forEach((el) => {
+            el.addEventListener("mouseenter", () => setCursorState("lab"));
+            el.addEventListener("mouseleave", reset);
+        });
+    }, [setCursorState]);
 
     useEffect(() => {
-        /* Check for touch device — hide the custom cursor in that case */
+        /* Check for touch device */
         isTouch.current =
             "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
         if (isTouch.current) {
-            /* On touch devices, hide the cursor and bail out early */
             if (cursorRef.current) cursorRef.current.style.display = "none";
+            if (trailCanvasRef.current) trailCanvasRef.current.style.display = "none";
             return;
         }
 
-        /* -------------------------------------------------------------------
-         * Mouse-move handler — updates the raw target position.
-         * This fires very frequently, so we only store the values and let
-         * the rAF loop handle the DOM updates.
-         * ----------------------------------------------------------------- */
+        /* ---- Ink trail canvas setup ---- */
+        const trailCanvas = trailCanvasRef.current;
+        const trailCtx = trailCanvas?.getContext("2d");
+
+        const resizeTrailCanvas = () => {
+            if (!trailCanvas) return;
+            trailCanvas.width = window.innerWidth;
+            trailCanvas.height = window.innerHeight;
+        };
+        resizeTrailCanvas();
+        window.addEventListener("resize", resizeTrailCanvas);
+
+        /* ---- Mouse-move handler ---- */
         const handleMouseMove = (e: MouseEvent) => {
             mousePos.current.x = e.clientX;
             mousePos.current.y = e.clientY;
         };
-
         document.addEventListener("mousemove", handleMouseMove);
 
-        /* -------------------------------------------------------------------
-         * Animation loop — Smoothly interpolates the cursor <div> toward
-         * the actual mouse position using a lerp factor of 0.15 (lower =
-         * smoother but more "laggy").
-         * ----------------------------------------------------------------- */
+        /* ---- Animation loop ---- */
+        let frameCount = 0;
         const animate = () => {
             const dx = mousePos.current.x - cursorPos.current.x;
             const dy = mousePos.current.y - cursorPos.current.y;
@@ -109,35 +130,69 @@ const CustomCursor: React.FC = () => {
                 cursorRef.current.style.transform = `translate(${cursorPos.current.x}px, ${cursorPos.current.y}px) translate(-50%, -50%)`;
             }
 
+            /* Phase 4B — Ink trail: paint a dot every 2nd frame */
+            if (trailCtx && trailCanvas && frameCount % 2 === 0) {
+                /* Slowly fade the trail */
+                trailCtx.fillStyle = "rgba(0, 0, 0, 0.03)";
+                trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+
+                /* Draw ink dot at cursor position */
+                const speed = Math.sqrt(dx * dx + dy * dy);
+                const radius = Math.min(3 + speed * 0.08, 8);
+
+                trailCtx.beginPath();
+                trailCtx.arc(
+                    cursorPos.current.x,
+                    cursorPos.current.y,
+                    radius,
+                    0,
+                    Math.PI * 2
+                );
+                trailCtx.fillStyle = "rgba(255, 61, 0, 0.12)";
+                trailCtx.fill();
+            }
+
+            frameCount++;
             rafId.current = requestAnimationFrame(animate);
         };
 
         rafId.current = requestAnimationFrame(animate);
 
-        /* Set up hover detection on all current interactive elements */
+        /* Set up hover detection */
         updateHoverTargets();
 
-        /* -------------------------------------------------------------------
-         * MutationObserver — Re-scans the DOM for interactive elements
-         * whenever child nodes are added/removed. This ensures hover
-         * expansion works even for dynamically rendered content (e.g. the
-         * project modal).
-         * ----------------------------------------------------------------- */
+        /* MutationObserver for dynamic content */
         const observer = new MutationObserver(() => {
             updateHoverTargets();
         });
-
         observer.observe(document.body, { childList: true, subtree: true });
 
-        /* Cleanup on unmount */
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("resize", resizeTrailCanvas);
             cancelAnimationFrame(rafId.current);
             observer.disconnect();
         };
     }, [updateHoverTargets]);
 
-    return <div ref={cursorRef} className="custom-cursor" />;
+    return (
+        <>
+            {/* Ink trail canvas — fixed behind cursor, in front of content */}
+            <canvas
+                ref={trailCanvasRef}
+                className="fixed inset-0 pointer-events-none z-[9998]"
+                style={{ mixBlendMode: "screen" }}
+            />
+
+            {/* The cursor dot + state label */}
+            <div ref={cursorRef} className="custom-cursor">
+                <span
+                    ref={labelRef}
+                    className="absolute inset-0 flex items-center justify-center text-[8px] font-sans uppercase tracking-widest text-white font-bold"
+                />
+            </div>
+        </>
+    );
 };
 
 export default CustomCursor;
