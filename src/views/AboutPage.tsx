@@ -20,7 +20,7 @@ const AboutPage: React.FC = () => {
                     "Chaos isn't a mess; it's an opportunity for complexity that logic doesn't understand yet."
                 </p>
                 <p>
-                    I started this journey with a curiosity for how things break—and how they look when they do. Over time, that morphed into a design philosophy I call **KHAOTIC**. It's about finding the friction between perfection and reality.
+                    I started this journey with a curiosity for how things break—and how they look when they do. Over time, that morphed into a design philosophy I call <strong>KHAOTIC</strong>. It's about finding the friction between perfection and reality.
                 </p>
                 <p>
                     Whether I'm deep in a React component or pushing pixels in Figma, I'm always looking for that one detail that feels a little 'off' in the right way. That's where the magic lives.

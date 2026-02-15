@@ -2,9 +2,10 @@ import React from "react";
 import { Icon } from "@iconify/react";
 
 const CONTACT_LINKS = [
-    { label: "Email", value: "admin@nexlink.co.za", icon: "lucide:mail", href: "mailto:admin@nexlink.co.za" },
-    { label: "Instagram", value: "@khaotic.dev", icon: "lucide:instagram", href: "https://instagram.com/khaotic.dev" },
-    { label: "GitHub", value: "harry-mofoka", icon: "lucide:github", href: "https://github.com/harry-mofoka" }
+    { label: "Email", value: "admin@nexlink.co.za", icon: "simple-icons:gmail", href: "mailto:admin@nexlink.co.za" },
+    { label: "Instagram", value: "@khaotic.dev", icon: "simple-icons:instagram", href: "https://instagram.com/khaotic.dev" },
+    { label: "GitHub", value: "harry-mofoka", icon: "simple-icons:github", href: "https://github.com/harry-mofoka" },
+    { label: "Behance", value: "khaotic", icon: "simple-icons:behance", href: "https://behance.net/khaotic" }
 ];
 
 const ContactPage: React.FC = () => {
