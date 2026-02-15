@@ -29,6 +29,7 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMood } from "../context/MoodContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -214,6 +215,7 @@ const MOUSE_INFLUENCE_RADIUS = 250;
  * HeroCanvas — Fullscreen generative noise field that reacts to the mouse.
  */
 const HeroCanvas: React.FC = () => {
+    const { mood } = useMood();
     /* -------------------------------------------------------------------------
      * Refs
      * ----------------------------------------------------------------------- */
@@ -233,16 +235,59 @@ const HeroCanvas: React.FC = () => {
     /** requestAnimationFrame ID for cleanup */
     const rafRef = useRef<number>(0);
 
+    /** Cached theme colors to avoid layout thrashing in the loop */
+    const colorsRef = useRef({
+        tr: 255,
+        tg: 255,
+        tb: 255,
+        ar: 255,
+        ag: 255,
+        ab: 255,
+    });
+
     /* -------------------------------------------------------------------------
-     * resizeCanvas — Match the canvas pixel buffer to the container's size.
-     *
-     * We multiply by devicePixelRatio for crisp rendering on retina displays,
-     * then scale the context so we can draw in CSS-pixel coordinates.
+     * Color Parser — Robust Hex/RGB/RGBA handling
      * ----------------------------------------------------------------------- */
+    const parseRGBValues = (colorStr: string) => {
+        /* Remove whitespace */
+        const clean = colorStr.trim().toLowerCase();
+
+        /* Handle Hex (#ffffff or #fff) */
+        if (clean.startsWith("#")) {
+            let fullHex = clean;
+            if (clean.length === 4) {
+                fullHex = `#${clean[1]}${clean[1]}${clean[2]}${clean[2]}${clean[3]}${clean[3]}`;
+            }
+            const r = parseInt(fullHex.slice(1, 3), 16);
+            const g = parseInt(fullHex.slice(3, 5), 16);
+            const b = parseInt(fullHex.slice(5, 7), 16);
+            return isNaN(r) || isNaN(g) || isNaN(b) ? [255, 255, 255] : [r, g, b];
+        }
+
+        /* Handle rgb() or rgba() */
+        const match = clean.match(/\d+/g);
+        if (match && match.length >= 3) {
+            return [Number(match[0]), Number(match[1]), Number(match[2])];
+        }
+
+        return [255, 255, 255];
+    };
+
+    /** Updates the cached colors by reading current theme variables */
+    const updateCachedColors = () => {
+        const style = window.getComputedStyle(document.body);
+        const textColor = style.getPropertyValue("--color-text").trim();
+        const accentColor = style.getPropertyValue("--color-accent").trim();
+
+        const [tr, tg, tb] = parseRGBValues(textColor);
+        const [ar, ag, ab] = parseRGBValues(accentColor);
+
+        colorsRef.current = { tr, tg, tb, ar, ag, ab };
+    };
+
     /* -------------------------------------------------------------------------
      * Main Effect — Set up canvas, resize handling, mouse tracking, and
-     * the animation loop. Everything is contained in one effect so that
-     * `animate` is in scope for both the loop and the resize-restart logic.
+     * the animation loop.
      * ----------------------------------------------------------------------- */
     useEffect(() => {
         /* ---- Animation Loop ---- */
@@ -250,10 +295,6 @@ const HeroCanvas: React.FC = () => {
             const ctx = ctxRef.current;
             const canvas = canvasRef.current;
             if (!ctx || !canvas) {
-                /* Early return WITHOUT scheduling another frame.
-                 * This prevents a tight spin of empty rAF callbacks.
-                 * The loop will be restarted by resizeCanvas once
-                 * the canvas context becomes available. */
                 rafRef.current = 0;
                 return;
             }
@@ -265,52 +306,26 @@ const HeroCanvas: React.FC = () => {
             const mx = mouseRef.current.x;
             const my = mouseRef.current.y;
 
+            /* Use cached colors to avoid getComputedStyle layout thrashing */
+            const { tr, tg, tb, ar, ag, ab } = colorsRef.current;
+
             /* Clear the canvas to fully transparent */
             ctx.clearRect(0, 0, w, h);
 
-            /* ---------------------------------------------------------------
-             * Render the dot grid
-             *
-             * For each dot position on a regular grid, we:
-             *   1. Compute its distance to the mouse cursor
-             *   2. Calculate a "proximity factor" (0 = far, 1 = on cursor)
-             *   3. Sample simplex noise with extra turbulence near the cursor
-             *   4. Map the noise value to brightness, size, and accent colour
-             * ------------------------------------------------------------- */
             const cols = Math.ceil(w / DOT_SPACING) + 1;
             const rows = Math.ceil(h / DOT_SPACING) + 1;
-
-            /* ---------------------------------------------------------------
-             * Theme-aware colors
-             * We read from CSS variables so the canvas matches the mood.
-             * ------------------------------------------------------------- */
-            const style = window.getComputedStyle(document.body);
-            const textColor = style.getPropertyValue("--color-text").trim();
-            const accentColor = style.getPropertyValue("--color-accent").trim();
-
-            /* Parse RGB from CSS variable strings (e.g. "rgb(255, 255, 255)") */
-            const parseRGB = (colorStr: string) => {
-                const match = colorStr.match(/\d+/g);
-                return match ? match.map(Number) : [255, 255, 255];
-            };
-
-            const [tr, tg, tb] = parseRGB(textColor);
-            const [ar, ag, ab] = parseRGB(accentColor);
 
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
                     const x = col * DOT_SPACING;
                     const y = row * DOT_SPACING;
 
-                    /* Distance from this dot to the mouse cursor */
                     const dx = x - mx;
                     const dy = y - my;
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
-                    /* Proximity factor: 1.0 at cursor centre, 0.0 beyond influence radius */
                     const proximity = Math.max(0, 1 - dist / MOUSE_INFLUENCE_RADIUS);
 
-                    /* ---- Noise sampling ---- */
                     const baseNoise = simplex3(
                         x * NOISE_SCALE,
                         y * NOISE_SCALE,
@@ -329,7 +344,6 @@ const HeroCanvas: React.FC = () => {
                     const noiseVal = baseNoise + turbulence;
                     const brightness = (noiseVal + 1) * 0.5;
 
-                    /* ---- Dot rendering ---- */
                     const baseAlpha = 0.08 + brightness * 0.27;
                     const cursorBoost = proximity * proximity * 0.6;
                     const alpha = Math.min(1, baseAlpha + cursorBoost);
@@ -371,13 +385,26 @@ const HeroCanvas: React.FC = () => {
                 ctx.scale(dpr, dpr);
                 ctxRef.current = ctx;
 
-                /* If the animation loop stopped (because ctx was null),
-                 * restart it now that the context is available. */
                 if (!rafRef.current) {
                     rafRef.current = requestAnimationFrame(animate);
                 }
             }
         };
+
+        /* ---- Initial color cache ---- */
+        updateCachedColors();
+
+        /* ---- Listen for mood changes ---- */
+        /* Since mood is applied to the body as 'data-mood', we use a MutationObserver
+         * to refresh our color cache whenever the attribute changes. */
+        const moodObserver = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.attributeName === "data-mood" || mutation.attributeName === "class") {
+                    updateCachedColors();
+                }
+            }
+        });
+        moodObserver.observe(document.body, { attributes: true });
 
         /* ---- Mouse tracking ---- */
         const handleMouseMove = (e: MouseEvent) => {
@@ -397,22 +424,20 @@ const HeroCanvas: React.FC = () => {
         container?.addEventListener("mousemove", handleMouseMove);
         container?.addEventListener("mouseleave", handleMouseLeave);
 
-        /* ---- Resize Observer ---- */
         const resizeObserver = new ResizeObserver(() => resizeCanvas());
         if (container) resizeObserver.observe(container);
 
-        /* Kick off initial resize (which also starts the animation loop) */
         resizeCanvas();
 
-        /* ---- Cleanup ---- */
         return () => {
             cancelAnimationFrame(rafRef.current);
             rafRef.current = 0;
             container?.removeEventListener("mousemove", handleMouseMove);
             container?.removeEventListener("mouseleave", handleMouseLeave);
             resizeObserver.disconnect();
+            moodObserver.disconnect();
         };
-    }, []);
+    }, [mood]);
 
     /* -------------------------------------------------------------------------
      * Ref for the letter container — animated by GSAP ScrollTrigger

@@ -18,12 +18,14 @@ import { createRoot } from "react-dom/client";
  * utilities and custom CSS classes are available throughout the app. */
 import "./index.css";
 
-/* Root application component */
+import { MoodProvider } from "./context/MoodContext";
 import App from "./App";
 
 /* Mount the React app into the #root element defined in index.html */
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <App />
+        <MoodProvider>
+            <App />
+        </MoodProvider>
     </StrictMode>
 );

@@ -80,7 +80,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
             modal.style.display = "block";
 
             /* Slide up from below */
-            gsap.to(modal, { y: "0%", duration: 0.8, ease: "power3.inOut" });
+            gsap.to(modal, { y: "0%", opacity: 1, duration: 0.8, ease: "power3.inOut" });
 
             /* Stagger content fade-in */
             gsap.fromTo(
@@ -119,11 +119,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         });
     }, [onClose]);
 
+    const isVisible = Boolean(project);
+
     return (
         <div
             ref={modalRef}
-            className="fixed inset-0 z-[100] w-full h-full bg-[var(--color-bg)] translate-y-[100%] will-change-transform transition-colors duration-500"
-            style={{ display: "none" }}
+            className={`fixed inset-0 z-[110] w-full h-full bg-[var(--color-bg)] transition-colors duration-500 overflow-hidden ${isVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                }`}
+            style={{
+                visibility: isVisible ? "visible" : "hidden"
+            }}
         >
             {/* ---- Fixed Close Button ---- */}
             <div className="fixed top-0 left-0 w-full p-6 md:p-8 flex justify-between z-[110] pointer-events-none">
@@ -149,6 +154,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
             <div
                 ref={scrollRef}
                 className="absolute inset-0 w-full h-full overflow-y-auto overscroll-contain z-[105] bg-[var(--color-bg)]"
+                data-lenis-prevent
             >
                 {/* ==== Hero Image (80vh) ==== */}
                 <div className="w-full h-[80vh] relative">

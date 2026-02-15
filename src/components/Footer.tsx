@@ -86,10 +86,10 @@ const Footer: React.FC = () => {
                 <div className="flex flex-col gap-4">
                     <span className="text-[var(--color-text-dim)]/50">Get in touch</span>
                     <a
-                        href="mailto:hello@harrymofoka.com"
+                        href="mailto:error404@harrymofoka.com"
                         className="text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors nav-link flex items-center gap-2 w-max font-medium"
                     >
-                        hello@harrymofoka.com
+                        error404@harrymofoka.com
                     </a>
                 </div>
 
@@ -124,7 +124,7 @@ const Footer: React.FC = () => {
 
                 {/* Column 4: Copyright */}
                 <div className="flex flex-col justify-end md:items-end gap-1">
-                    <span className="text-[var(--color-text-dim)]/40">© 2024 Harry Mofoka</span>
+                    <span className="text-[var(--color-text-dim)]/40">© 2026 Harry Mofoka</span>
                     <span className="text-[8px] text-[var(--color-text-dim)]/20 lowercase">
                         Built with chaos.
                     </span>
