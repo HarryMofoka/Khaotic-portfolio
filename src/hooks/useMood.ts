@@ -19,14 +19,13 @@
 import { useState, useCallback, useEffect } from "react";
 
 /** All available mood/theme names */
-export const MOODS = ["default", "light", "midnight", "ember"] as const;
+export const MOODS = ["default", "midnight", "ember"] as const;
 export type Mood = (typeof MOODS)[number];
 
 /**
  * useMood — Multi-theme mood system.
  *
- * Manages a `data-mood` attribute on `document.body` and the existing
- * `light-mode` class for backward compatibility.
+ * Manages a `data-mood` attribute on `document.body`.
  */
 export function useMood() {
     const [mood, setMoodState] = useState<Mood>(() => {
@@ -41,13 +40,8 @@ export function useMood() {
      * setMood — Apply a specific mood.
      */
     const setMood = useCallback((newMood: Mood) => {
-        /* Remove all mood classes + the legacy light-mode class */
-        document.body.classList.remove("light-mode");
+        /* Remove data-mood attribute */
         document.body.removeAttribute("data-mood");
-
-        if (newMood === "light") {
-            document.body.classList.add("light-mode");
-        }
 
         document.body.setAttribute("data-mood", newMood);
         localStorage.setItem("khaotic-mood", newMood);
@@ -63,10 +57,6 @@ export function useMood() {
             const nextIndex = (currentIndex + 1) % MOODS.length;
             const next = MOODS[nextIndex];
 
-            document.body.classList.remove("light-mode");
-            if (next === "light") {
-                document.body.classList.add("light-mode");
-            }
             document.body.setAttribute("data-mood", next);
             localStorage.setItem("khaotic-mood", next);
 
@@ -76,15 +66,8 @@ export function useMood() {
 
     /* Initial effect to apply mood on mount */
     useEffect(() => {
-        document.body.classList.remove("light-mode");
-        if (mood === "light") {
-            document.body.classList.add("light-mode");
-        }
         document.body.setAttribute("data-mood", mood);
     }, []);
 
-    /** Whether current mood is a light-background mood */
-    const isLight = mood === "light";
-
-    return { mood, setMood, cycleMood, isLight };
+    return { mood, setMood, cycleMood };
 }

@@ -132,8 +132,14 @@ const CustomCursor: React.FC = () => {
 
             /* Phase 4B — Ink trail: paint a dot every 2nd frame */
             if (trailCtx && trailCanvas && frameCount % 2 === 0) {
-                /* Slowly fade the trail */
-                trailCtx.fillStyle = "rgba(0, 0, 0, 0.03)";
+                /* Set the blend mode on the canvas element style for better results in dark mode */
+                if (trailCanvasRef.current) {
+                    trailCanvasRef.current.style.mixBlendMode = "screen";
+                }
+
+                /* Fade the trail to blackish (source-over with low alpha) */
+                trailCtx.globalCompositeOperation = "source-over";
+                trailCtx.fillStyle = "rgba(0, 0, 0, 0.05)";
                 trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
 
                 /* Draw ink dot at cursor position */
@@ -181,14 +187,13 @@ const CustomCursor: React.FC = () => {
             <canvas
                 ref={trailCanvasRef}
                 className="fixed inset-0 pointer-events-none z-[9998]"
-                style={{ mixBlendMode: "screen" }}
             />
 
             {/* The cursor dot + state label */}
             <div ref={cursorRef} className="custom-cursor">
                 <span
                     ref={labelRef}
-                    className="absolute inset-0 flex items-center justify-center text-[8px] font-sans uppercase tracking-widest text-white font-bold"
+                    className="absolute inset-0 flex items-center justify-center text-[8px] font-sans uppercase tracking-widest text-[var(--color-bg)] mix-blend-difference font-bold"
                 />
             </div>
         </>

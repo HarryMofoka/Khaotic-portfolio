@@ -69,16 +69,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
 
     /* -------------------------------------------------------------------------
      * Open / Close Animation
-     *
-     * When `project` changes from null → object:
-     *   1. Reset GSAP position to y: 100% (below viewport)
-     *   2. Display the modal
-     *   3. Animate y to 0%
-     *   4. Stagger-animate title, subtitle, and content from below
-     *   5. Reset inner scroll to top
-     *
-     * When `project` changes from object → null:
-     *   The close is handled imperatively via `handleClose` below.
      * ----------------------------------------------------------------------- */
     useEffect(() => {
         const modal = modalRef.current;
@@ -129,26 +119,20 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         });
     }, [onClose]);
 
-    /* -------------------------------------------------------------------------
-     * Render
-     *
-     * The modal is always in the DOM (display: none when closed) so we can
-     * animate it in/out smoothly without React mounting/unmounting delays.
-     * ----------------------------------------------------------------------- */
     return (
         <div
             ref={modalRef}
-            className="fixed inset-0 z-[100] w-full h-full bg-[#050505] translate-y-[100%] will-change-transform"
+            className="fixed inset-0 z-[100] w-full h-full bg-[var(--color-bg)] translate-y-[100%] will-change-transform transition-colors duration-500"
             style={{ display: "none" }}
         >
             {/* ---- Fixed Close Button ---- */}
             <div className="fixed top-0 left-0 w-full p-6 md:p-8 flex justify-between z-[110] pointer-events-none">
-                <span className="text-white/50 font-display text-xl rotate-3 pointer-events-auto">
+                <span className="text-[var(--color-text-dim)] font-display text-xl rotate-3 pointer-events-auto">
                     Project View
                 </span>
                 <button
                     onClick={handleClose}
-                    className="group flex items-center gap-2 text-white/70 hover:text-[#FF3D00] transition-colors cursor-pointer pointer-events-auto bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/10"
+                    className="group flex items-center gap-2 text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors cursor-pointer pointer-events-auto bg-[var(--color-surface)]/80 backdrop-blur-md px-4 py-2 rounded-full border border-[var(--color-border)]"
                 >
                     <span className="uppercase tracking-widest text-xs font-sans font-semibold">
                         Close
@@ -164,7 +148,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
             {/* ---- Scrollable Content Container ---- */}
             <div
                 ref={scrollRef}
-                className="absolute inset-0 w-full h-full overflow-y-auto overscroll-contain z-[105] bg-[#050505]"
+                className="absolute inset-0 w-full h-full overflow-y-auto overscroll-contain z-[105] bg-[var(--color-bg)]"
             >
                 {/* ==== Hero Image (80vh) ==== */}
                 <div className="w-full h-[80vh] relative">
@@ -175,15 +159,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                             className="w-full h-full object-cover"
                         />
                     )}
-                    {/* Gradient overlay fading to background colour at bottom */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-90" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)] via-transparent to-transparent opacity-95" />
 
-                    {/* Title + Subtitle overlay on image */}
                     <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 pb-12">
                         <div className="overflow-hidden">
                             <h1
                                 ref={titleRef}
-                                className="font-display text-5xl md:text-8xl text-white transform -rotate-1 origin-bottom-left drop-shadow-2xl"
+                                className="font-display text-5xl md:text-8xl text-[var(--color-text)] transform -rotate-1 origin-bottom-left drop-shadow-2xl"
                             >
                                 {project?.title}
                             </h1>
@@ -191,7 +173,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                         <div className="mt-4 flex gap-4 items-center">
                             <span
                                 ref={subtitleRef}
-                                className="px-3 py-1 border border-white/30 rounded-full text-xs font-sans uppercase tracking-widest text-white/80 backdrop-blur-sm"
+                                className="px-3 py-1 border border-[var(--color-border)] rounded-full text-xs font-sans uppercase tracking-widest text-[var(--color-text-dim)] backdrop-blur-sm"
                             >
                                 {project?.subtitle}
                             </span>
@@ -202,69 +184,63 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                 {/* ==== Content Grid ==== */}
                 <div
                     ref={contentRef}
-                    className="max-w-7xl mx-auto px-6 md:px-12 py-24 grid grid-cols-1 md:grid-cols-12 gap-16 text-white"
+                    className="max-w-7xl mx-auto px-6 md:px-12 py-24 grid grid-cols-1 md:grid-cols-12 gap-16 text-[var(--color-text)]"
                 >
-                    {/* ---- Left Column (7/12): Story + Gallery Stubs ---- */}
                     <div className="md:col-span-7 flex flex-col gap-8">
-                        <h3 className="font-display text-3xl text-[#FF3D00] -rotate-1">
+                        <h3 className="font-display text-3xl text-[var(--color-accent)] -rotate-1">
                             The Story
                         </h3>
-                        <p className="font-sans text-lg md:text-xl leading-relaxed text-gray-300 font-light">
+                        <p className="font-sans text-lg md:text-xl leading-relaxed text-[var(--color-text-dim)] font-light whitespace-pre-wrap">
                             {project?.description}
                         </p>
 
-                        {/* Gallery grid placeholder */}
                         <div className="grid grid-cols-2 gap-4 mt-12 w-full">
-                            <div className="aspect-[4/5] bg-[#111] rounded border border-white/10" />
-                            <div className="aspect-[4/5] bg-[#111] rounded border border-white/10 mt-12" />
+                            <div className="aspect-[4/5] bg-[var(--color-surface)] rounded border border-[var(--color-border)]" />
+                            <div className="aspect-[4/5] bg-[var(--color-surface)] rounded border border-[var(--color-border)] mt-12" />
                         </div>
                     </div>
 
-                    {/* ---- Right Column (5/12): Credits + Tech Specs ---- */}
                     <div className="md:col-span-5 flex flex-col gap-8 sticky top-24 h-fit">
-                        <h3 className="font-display text-3xl text-white rotate-1">
+                        <h3 className="font-display text-3xl text-[var(--color-text)] rotate-1">
                             Credits
                         </h3>
 
-                        {/* Credits list — each entry is a row with role on the left, name on the right */}
-                        <div className="flex flex-col border-t border-white/10">
+                        <div className="flex flex-col border-t border-[var(--color-border)]">
                             {project?.credits.map((credit, i) => (
                                 <div
                                     key={i}
-                                    className="flex justify-between items-center py-4 border-b border-white/10 group hover:bg-white/5 transition-colors px-2"
+                                    className="flex justify-between items-center py-4 border-b border-[var(--color-border)] group hover:bg-[var(--color-surface)] transition-colors px-2"
                                 >
-                                    <span className="text-secondary text-xs uppercase tracking-widest font-sans">
+                                    <span className="text-[var(--color-text-dim)] text-xs uppercase tracking-widest font-sans">
                                         {credit.role}
                                     </span>
-                                    <span className="text-white font-display text-lg tracking-wide">
+                                    <span className="text-[var(--color-text)] font-display text-lg tracking-wide">
                                         {credit.name}
                                     </span>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Tech Specs panel */}
-                        <div className="mt-12 p-6 border border-white/10 rounded-lg bg-[#0a0a0a]">
-                            <span className="font-display text-xl block mb-2 text-[#FF3D00]">
+                        <div className="mt-12 p-6 border border-[var(--color-border)] rounded-lg bg-[var(--color-surface)]">
+                            <span className="font-display text-xl block mb-2 text-[var(--color-accent)]">
                                 Tech Specs
                             </span>
-                            <ul className="font-sans text-sm text-gray-400 space-y-2 font-mono">
-                                <li>Camera: Sony Venice 2</li>
-                                <li>Lens: Cookie S4/i</li>
-                                <li>Grade: DaVinci Resolve</li>
-                                <li>Output: 4K DCP</li>
+                            <ul className="font-sans text-sm text-[var(--color-text-dim)] space-y-2 font-mono">
+                                <li>Origin: De Deur, SA</li>
+                                <li>Status: Always Chaotic</li>
+                                <li>Frequency: High Speed</li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
                 {/* ==== "Next Project" CTA ==== */}
-                <div className="w-full py-32 flex justify-center border-t border-white/10 mt-12 bg-[#050505]">
+                <div className="w-full py-32 flex justify-center border-t border-[var(--color-border)] mt-12 bg-[var(--color-bg)]">
                     <button onClick={handleClose} className="group relative">
-                        <span className="font-display text-4xl md:text-6xl text-white group-hover:text-[#FF3D00] transition-colors">
-                            Next Project
+                        <span className="font-display text-4xl md:text-6xl text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">
+                            Next Story
                         </span>
-                        <div className="h-1 w-0 bg-[#FF3D00] group-hover:w-full transition-all duration-300 mt-2" />
+                        <div className="h-1 w-0 bg-[var(--color-accent)] group-hover:w-full transition-all duration-300 mt-2" />
                     </button>
                 </div>
             </div>

@@ -59,35 +59,35 @@ const Footer: React.FC = () => {
     return (
         <footer
             ref={containerRef}
-            className="relative z-10 w-full px-6 md:px-12 pb-12 pt-32 mt-0 border-t border-white/5 overflow-hidden"
+            className="relative z-10 w-full px-6 md:px-12 pb-12 pt-32 mt-0 border-t border-[var(--color-border)] overflow-hidden"
         >
             {/* ---- Large CTA Heading (Magnetic) ---- */}
             <div className="flex flex-col gap-8 mb-40 items-center text-center">
                 <h2
                     ref={ctaRef}
                     onClick={scrollToTop}
-                    className="font-display text-[8vw] md:text-[6vw] leading-[1.1] text-white hover:text-white/80 transition-colors duration-500 cursor-pointer nav-link select-none"
+                    className="font-display text-[8vw] md:text-[6vw] leading-[1.1] text-[var(--color-text)] hover:text-[var(--color-text-dim)] transition-colors duration-500 cursor-pointer nav-link select-none"
                     style={{ transform: "rotate(2deg)" }}
                 >
                     We make
                     <br />
-                    <span className="text-[#FF3D00] inline-block hover:scale-110 transition-transform duration-500">
+                    <span className="text-[var(--color-accent)] inline-block hover:scale-110 transition-transform duration-500">
                         Art.
                     </span>
                 </h2>
-                <p className="font-sans text-[10px] uppercase tracking-[0.4em] text-white/20 mt-4">
+                <p className="font-sans text-[10px] uppercase tracking-[0.4em] text-[var(--color-text-dim)]/40 mt-4">
                     Click to restart the loop
                 </p>
             </div>
 
             {/* ---- Bottom Info Grid ---- */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-4 text-[10px] tracking-widest uppercase font-sans border-t border-white/5 pt-12">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-4 text-[10px] tracking-widest uppercase font-sans border-t border-[var(--color-border)] pt-12">
                 {/* Column 1: Contact */}
                 <div className="flex flex-col gap-4">
-                    <span className="text-white/30">Get in touch</span>
+                    <span className="text-[var(--color-text-dim)]/50">Get in touch</span>
                     <a
                         href="mailto:hello@harrymofoka.com"
-                        className="text-white hover:text-[#FF3D00] transition-colors nav-link flex items-center gap-2 w-max font-medium"
+                        className="text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors nav-link flex items-center gap-2 w-max font-medium"
                     >
                         hello@harrymofoka.com
                     </a>
@@ -95,33 +95,37 @@ const Footer: React.FC = () => {
 
                 {/* Column 2: Socials */}
                 <div className="flex flex-col gap-4">
-                    <span className="text-white/30">Connect</span>
-                    <div className="flex flex-col gap-2 text-white">
+                    <span className="text-[var(--color-text-dim)]/50">Connect</span>
+                    <div className="flex flex-col gap-2 text-[var(--color-text)]">
                         <a
-                            href="#"
-                            className="hover:text-[#FF3D00] transition-colors nav-link w-max font-medium"
+                            href="https://www.instagram.com/kalm.harry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-[var(--color-accent)] transition-colors nav-link w-max font-medium"
                         >
                             Instagram
                         </a>
                         <a
-                            href="#"
-                            className="hover:text-[#FF3D00] transition-colors nav-link w-max font-medium"
+                            href="https://www.linkedin.com/in/harry-mofoka"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-[var(--color-accent)] transition-colors nav-link w-max font-medium"
                         >
-                            Behance
+                            LinkedIn
                         </a>
                     </div>
                 </div>
 
                 {/* Column 3: Studio */}
                 <div className="flex flex-col gap-4">
-                    <span className="text-white/30">Studio</span>
-                    <span className="text-white font-medium">Pretoria, ZA</span>
+                    <span className="text-[var(--color-text-dim)]/50">Studio</span>
+                    <span className="text-[var(--color-text)] font-medium">De Deur, SA</span>
                 </div>
 
                 {/* Column 4: Copyright */}
                 <div className="flex flex-col justify-end md:items-end gap-1">
-                    <span className="text-white/20">© 2024 Harry Mofoka</span>
-                    <span className="text-[8px] text-white/10 lowercase">
+                    <span className="text-[var(--color-text-dim)]/40">© 2024 Harry Mofoka</span>
+                    <span className="text-[8px] text-[var(--color-text-dim)]/20 lowercase">
                         Built with chaos.
                     </span>
                 </div>

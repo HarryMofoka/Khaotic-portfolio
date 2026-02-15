@@ -117,13 +117,13 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
         <div
             id="menu-overlay"
             ref={overlayRef}
-            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-2xl hidden flex-col justify-center items-center overflow-hidden"
+            className="fixed inset-0 z-40 bg-[var(--color-bg)]/95 backdrop-blur-2xl hidden flex-col justify-center items-center overflow-hidden"
             style={{ opacity: 0 }}
         >
             {/* ---- Background Accents ---- */}
             <div className="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
-                <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] bg-[#FF3D00] blur-[120px] rounded-full animate-pulse" />
-                <div className="absolute -bottom-[10%] -right-[10%] w-[40vw] h-[40vw] bg-[#FF3D00] blur-[150px] rounded-full opacity-50" />
+                <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] bg-[var(--color-accent)] blur-[120px] rounded-full animate-pulse opacity-40" />
+                <div className="absolute -bottom-[10%] -right-[10%] w-[40vw] h-[40vw] bg-[var(--color-accent)] blur-[150px] rounded-full opacity-30" />
             </div>
 
             <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row w-full h-full pt-40 pb-20 relative z-10">
@@ -140,7 +140,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
                             className="menu-item nav-link group block"
                         >
                             <div
-                                className="menu-link-hover font-display font-medium text-[12vw] md:text-[6vw] leading-[0.9] text-white/40 group-hover:text-white transition-colors duration-500 uppercase flex items-baseline gap-4"
+                                className="menu-link-hover font-display font-medium text-[12vw] md:text-[6vw] leading-[0.9] text-[var(--color-text-dim)] group-hover:text-[var(--color-text)] transition-colors duration-500 uppercase flex items-baseline gap-4"
                                 data-text={label}
                             >
                                 <span className="text-[2vw] font-sans opacity-20 group-hover:opacity-100 transition-opacity">0{i + 1}</span>
@@ -154,15 +154,15 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
                 <div className="md:w-1/3 flex flex-col justify-end items-start md:items-end gap-16 mt-12 md:mt-0">
                     {/* Mood Switcher (Phase 4C + 5B) */}
                     <div ref={moodRef} className="flex flex-col gap-4 text-left md:text-right opacity-0 translate-y-4">
-                        <span className="text-white/20 text-[10px] uppercase tracking-[0.3em] font-sans">Switch Mood</span>
+                        <span className="text-[var(--color-text-dim)] text-[10px] uppercase tracking-[0.3em] font-sans">Switch Mood</span>
                         <div className="flex flex-wrap md:justify-end gap-3">
                             {MOODS.map((m) => (
                                 <button
                                     key={m}
                                     onClick={() => setMood(m)}
                                     className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-widest transition-all duration-300 ${mood === m
-                                        ? "bg-[#FF3D00] text-white"
-                                        : "border border-white/10 text-white/40 hover:text-white hover:border-white/30"
+                                        ? "bg-[var(--color-accent)] text-white"
+                                        : "border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:border-[var(--color-text-dim)]"
                                         }`}
                                 >
                                     {m}
@@ -175,10 +175,10 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
                         ref={infoRef}
                         className="flex flex-col gap-4 text-left md:text-right menu-info opacity-0 translate-y-4"
                     >
-                        <span className="text-white/20 text-[10px] uppercase tracking-[0.3em] font-sans">Connect</span>
-                        <div className="flex flex-col gap-2 text-2xl font-display text-white">
-                            <a href="#" className="nav-link hover:text-[#FF3D00] transition-colors w-max md:ml-auto">Instagram</a>
-                            <a href="#" className="nav-link hover:text-[#FF3D00] transition-colors w-max md:ml-auto">Behance</a>
+                        <span className="text-[var(--color-text-dim)] text-[10px] uppercase tracking-[0.3em] font-sans">Connect</span>
+                        <div className="flex flex-col gap-2 text-2xl font-display text-[var(--color-text)]">
+                            <a href="#" className="nav-link hover:text-[var(--color-accent)] transition-colors w-max md:ml-auto">Instagram</a>
+                            <a href="#" className="nav-link hover:text-[var(--color-accent)] transition-colors w-max md:ml-auto">Behance</a>
                         </div>
                     </div>
                 </div>

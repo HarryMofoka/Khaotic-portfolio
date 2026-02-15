@@ -132,7 +132,7 @@ const TheLab: React.FC = () => {
                 {EXPERIMENTS.map((exp, i) => (
                     <div
                         key={exp.title}
-                        className={`lab-card group relative p-6 rounded-sm border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.05] transition-all duration-500 cursor-pointer ${i === 0
+                        className={`lab-card group relative p-6 rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)] backdrop-blur-sm hover:scale-[1.02] transition-all duration-500 cursor-pointer ${i === 0
                             ? "sm:col-span-2 lg:col-span-2"
                             : ""
                             }`}
@@ -149,12 +149,12 @@ const TheLab: React.FC = () => {
                         </span>
 
                         {/* Title */}
-                        <h3 className="font-display text-xl md:text-2xl text-white mb-2 group-hover:text-[#FF3D00] transition-colors duration-300">
+                        <h3 className="font-display text-xl md:text-2xl text-[var(--color-text)] mb-2 group-hover:text-[var(--color-accent)] transition-colors duration-300">
                             {exp.title}
                         </h3>
 
                         {/* Description */}
-                        <p className="font-sans text-xs md:text-sm text-white/40 leading-relaxed mb-4">
+                        <p className="font-sans text-xs md:text-sm text-[var(--color-text-dim)] leading-relaxed mb-4">
                             {exp.description}
                         </p>
 
@@ -163,7 +163,7 @@ const TheLab: React.FC = () => {
                             {exp.tags.map((tag) => (
                                 <span
                                     key={tag}
-                                    className="font-mono text-[10px] text-white/20 border border-white/5 px-2 py-0.5 rounded-full"
+                                    className="font-mono text-[10px] text-[var(--color-text-dim)]/40 border border-[var(--color-border)] px-2 py-0.5 rounded-full"
                                 >
                                     {tag}
                                 </span>
@@ -171,7 +171,7 @@ const TheLab: React.FC = () => {
                         </div>
 
                         {/* Hover line accent */}
-                        <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#FF3D00] group-hover:w-full transition-all duration-500" />
+                        <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[var(--color-accent)] group-hover:w-full transition-all duration-500" />
                     </div>
                 ))}
             </div>

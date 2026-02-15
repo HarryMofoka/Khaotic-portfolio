@@ -59,7 +59,6 @@ import AboutCreator from "./components/AboutCreator";
 
 /* ---- Hooks ---- */
 import { useLenis } from "./hooks/useLenis";
-import { useMood } from "./hooks/useMood";
 import AmbientSound from "./components/AmbientSound";
 
 /* ---- Data ---- */
@@ -80,11 +79,7 @@ const App: React.FC = () => {
      */
     const { lenisRef } = useLenis(false);
 
-    /**
-     * useMood — Multi-theme mood system (Phase 4C).
-     * `mood` is the current theme name; `cycleMood` rotates through them.
-     */
-    const { isLight, cycleMood } = useMood();
+
 
     /* -----------------------------------------------------------------------
      * State
@@ -114,6 +109,7 @@ const App: React.FC = () => {
         /* Start smooth scrolling */
         lenisRef.current?.start();
         document.body.style.overflow = "auto";
+        document.body.classList.add("ready");
 
         /* Intro animation timeline */
         const tl = gsap.timeline();
@@ -253,8 +249,6 @@ const App: React.FC = () => {
             <Navbar
                 isMenuOpen={isMenuOpen}
                 onMenuToggle={handleMenuToggle}
-                isLight={isLight}
-                toggleTheme={cycleMood}
             />
             <MenuOverlay isOpen={isMenuOpen} onClose={handleMenuClose} />
 
