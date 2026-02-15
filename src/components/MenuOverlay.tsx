@@ -148,11 +148,8 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
                         <div className="flex flex-col gap-4">
                             <span className="font-sans text-[10px] uppercase tracking-widest text-[var(--color-accent)]">Manifesto</span>
                             <div className="flex gap-6 justify-start md:justify-end">
-                                <a href="https://instagram.com/khaotic.dev" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
+                                <a href="https://www.instagram.com/kalm.harry/" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
                                     <Icon icon="simple-icons:instagram" width={24} />
-                                </a>
-                                <a href="https://behance.net/khaotic" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
-                                    <Icon icon="simple-icons:behance" width={24} />
                                 </a>
                                 <a href="https://github.com/harry-mofoka" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
                                     <Icon icon="simple-icons:github" width={24} />

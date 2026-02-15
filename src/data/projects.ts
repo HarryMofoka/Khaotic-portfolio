@@ -25,14 +25,14 @@ export const PROJECTS: Project[] = [
         category: "Origin Story",
         techDetails: "Analog Memories • 35mm Grain",
         cardImage:
-            "https://images.unsplash.com/photo-1493246507139-91e8bef99c17?q=80&w=2940&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2940&auto=format&fit=crop",
         modalImage:
-            "https://images.unsplash.com/photo-1493246507139-91e8bef99c17?q=80&w=2940&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2940&auto=format&fit=crop",
         description:
             "Growing up in De Deur, South Africa, is like living in a slow-motion film where someone accidentally left the 'Vivid' filter on. The town is quiet—so quiet you can hear your own creative insecurities whispering. \n\nI started designing because the silence was too loud. I wanted to create something that broke the peace. My first 'distortion' wasn't digital; it was just me trying to draw a straight line and failing so beautifully that it became a philosophy. De Deur taught me that you don't need a skyscraper to have big thoughts, just a lot of space and a very stable internet connection (mostly).",
         credits: [
             { role: "Location", name: "De Deur, SA" },
-            { role: "Vibe", name: "Silence & Chaos" },
+            { role: "Instagram", name: "@kalm.harry" },
             { role: "Director", name: "Harry Mofoka" },
         ],
         rotation: "-2deg",
