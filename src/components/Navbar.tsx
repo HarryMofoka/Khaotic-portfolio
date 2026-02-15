@@ -29,7 +29,6 @@
  * ========================================================================== */
 
 import React, { useEffect, useRef, useCallback } from "react";
-import { Icon } from "@iconify/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -41,10 +40,6 @@ interface NavbarProps {
     isMenuOpen: boolean;
     /** Callback to toggle the menu overlay */
     onMenuToggle: () => void;
-    /** Whether light mode is active */
-    isLight: boolean;
-    /** Callback to toggle the theme */
-    toggleTheme: () => void;
 }
 
 /**
@@ -53,8 +48,6 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({
     isMenuOpen,
     onMenuToggle,
-    isLight,
-    toggleTheme,
 }) => {
     /* Ref for the pill container — animated by GSAP */
     const pillRef = useRef<HTMLDivElement>(null);
@@ -116,8 +109,14 @@ const Navbar: React.FC<NavbarProps> = ({
                 width: "600px",
                 height: "44px",
                 background:
-                    "linear-gradient(180deg, rgba(30,30,30,0.8) 0%, rgba(10,10,10,0.9) 100%)",
-                backdropFilter: "blur(20px)",
+                    "rgba(var(--bg-rgb, 10, 10, 10), 0.85)", // We'll assume a fallback or just use variables
+                /* Note: Tailwind v4 variables might need a different approach for RGBA in JS.
+                   We'll use a CSS-based approach or just rely on the variable directly if opacity isn't critical.
+                   Actually, let's use a simpler solid color variable with alpha if possible, 
+                   or just trust the CSS variable is defined for background. */
+                backgroundColor: "var(--color-bg)",
+                borderColor: "var(--color-border)",
+                backdropFilter: "blur(24px)",
                 borderRadius: "9999px",
                 marginTop: "12px",
                 ease: "power2.inOut",
@@ -144,7 +143,8 @@ const Navbar: React.FC<NavbarProps> = ({
                 },
                 width: "92%",
                 height: "48px",
-                backgroundColor: "rgba(20, 20, 22, 0.9)",
+                backgroundColor: "var(--color-bg)",
+                borderColor: "var(--color-border)",
                 backdropFilter: "blur(20px)",
                 marginTop: "8px",
                 ease: "power2.out",
@@ -171,11 +171,11 @@ const Navbar: React.FC<NavbarProps> = ({
             <div
                 id="nav-pill"
                 ref={pillRef}
-                className="pointer-events-auto opacity-0 translate-y-[-20px] w-full h-20 rounded-full flex items-center justify-between px-8 relative overflow-hidden group origin-top will-change-transform z-50"
+                className="pointer-events-auto opacity-0 translate-y-[-20px] w-full h-20 rounded-full flex items-center justify-between px-8 relative overflow-hidden group origin-top will-change-transform z-50 transition-colors"
                 style={{
-                    background: "rgba(255, 255, 255, 0.01)",
+                    backgroundColor: "transparent",
                     backdropFilter: "blur(0px)",
-                    border: "1px solid rgba(255, 255, 255, 0)",
+                    border: "1px solid transparent",
                 }}
             >
                 {/* ---- LEFT: Menu Trigger ---- */}
@@ -183,13 +183,13 @@ const Navbar: React.FC<NavbarProps> = ({
                     <button
                         ref={menuBtnRef}
                         onClick={handleMenuClick}
-                        className="nav-link text-white hover:text-white/80 text-[16px] font-sans font-medium transition-colors duration-300 origin-left whitespace-nowrap flex items-center gap-2 group-hover:text-[#FF3D00]"
+                        className="nav-link text-[var(--color-text)] hover:text-[var(--color-accent)] text-[16px] font-sans font-medium transition-colors duration-300 origin-left whitespace-nowrap flex items-center gap-2"
                     >
                         {/* Animated dot — accent colour when menu is open */}
                         <div
                             className="w-1.5 h-1.5 rounded-full transition-colors"
                             style={{
-                                backgroundColor: isMenuOpen ? "#FF3D00" : "white",
+                                backgroundColor: isMenuOpen ? "var(--color-accent)" : "var(--color-text)",
                             }}
                         />
                         <span className="translate-y-[1px]">
@@ -203,37 +203,23 @@ const Navbar: React.FC<NavbarProps> = ({
                     <h1
                         ref={logoRef}
                         id="nav-logo"
-                        className="antialiased origin-center whitespace-nowrap text-xl font-extrabold text-white tracking-tight font-display pt-2"
+                        className="antialiased origin-center whitespace-nowrap text-xl font-extrabold text-[var(--color-text)] tracking-tight font-display pt-2"
                     >
                         KHAOTIC
                     </h1>
                 </div>
 
-                {/* ---- RIGHT: Meta Info & Theme Toggle ---- */}
+                {/* ---- RIGHT: Meta Info ---- */}
                 <div
                     ref={rightGroupRef}
-                    className="flex items-center justify-end gap-6 z-10 text-white w-[160px] h-full origin-right"
+                    className="flex items-center justify-end gap-6 z-10 text-[var(--color-text)] w-[160px] h-full origin-right"
                 >
                     {/* South African clock — hidden on mobile */}
-                    <div className="hidden md:flex items-center gap-2 text-[14px] font-sans font-normal tracking-wide whitespace-nowrap">
+                    <div className="hidden md:flex items-center gap-2 text-[14px] font-sans font-normal tracking-wide whitespace-nowrap text-[var(--color-text-dim)]">
                         <span>SAR</span>
                         <span ref={timeRef} className="tabular-nums">
                             --:--
                         </span>
-                    </div>
-
-                    {/* Theme toggle icon */}
-                    <div className="flex items-center gap-4 h-full">
-                        <button
-                            onClick={toggleTheme}
-                            className="nav-link hover:text-white/70 transition-colors duration-300 flex items-center justify-center p-1 rounded-full"
-                        >
-                            <Icon
-                                icon={isLight ? "lucide:sun" : "lucide:moon"}
-                                width={18}
-                                height={18}
-                            />
-                        </button>
                     </div>
                 </div>
             </div>

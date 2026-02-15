@@ -164,11 +164,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             onMouseLeave={handleMouseLeave}
         >
             <div
-                className="relative w-[85vw] md:w-[60vw] p-4 bg-[#0a0a0a] film-card rounded-sm hover:rotate-0 transition-transform duration-500 ease-out cursor-pointer nav-link"
+                className="relative w-[85vw] md:w-[60vw] p-4 bg-[var(--color-surface)] film-card rounded-sm hover:rotate-0 transition-transform duration-500 ease-out cursor-pointer nav-link"
                 style={{ transform: `rotate(${microRotation}deg)` }}
             >
                 {/* ---- Image / Video Container ---- */}
-                <div className="relative w-full aspect-[16/9] overflow-hidden bg-[#111] mb-4 border border-white/5">
+                <div className="relative w-full aspect-[16/9] overflow-hidden bg-[var(--color-bg)] mb-4 border border-[var(--color-border)]">
                     {/* Dark overlay that clears on hover */}
                     <div className="absolute inset-0 bg-black/10 z-10 group-hover:bg-transparent transition-colors duration-500" />
 
@@ -209,22 +209,22 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 <div className="flex justify-between items-end px-2 pb-1">
                     {/* Left: category + tech details */}
                     <div className="flex flex-col gap-1">
-                        <span className="font-sans text-xs uppercase tracking-[0.2em] text-gray-400">
+                        <span className="font-sans text-xs uppercase tracking-[0.2em] text-[var(--color-text-dim)]">
                             {project.category}
                         </span>
-                        <span className="font-sans text-[10px] text-gray-500">
+                        <span className="font-sans text-[10px] text-[var(--color-text-dim)]/70">
                             {project.techDetails}
                         </span>
                     </div>
 
                     {/* Right: project number + arrow icon */}
                     <div className="flex items-center gap-2">
-                        <span className="font-display text-xl text-[#FF3D00]">
+                        <span className="font-display text-xl text-[var(--color-accent)]">
                             {displayNumber}
                         </span>
                         <Icon
                             icon="lucide:arrow-up-right"
-                            className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            className="text-[var(--color-text)] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         />
                     </div>
                 </div>

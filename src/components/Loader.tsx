@@ -34,104 +34,101 @@ interface LoaderProps {
  * Loader — Full-screen branded loading overlay with animated counter.
  */
 const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
-    /* -------------------------------------------------------------------------
-     * Refs — Direct DOM references for imperative GSAP animation
-     * ----------------------------------------------------------------------- */
     const loaderRef = useRef<HTMLDivElement>(null);
     const countRef = useRef<HTMLSpanElement>(null);
     const statusRef = useRef<HTMLSpanElement>(null);
+    const countContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        /* Store the DOM nodes locally so they're available in the cleanup */
         const loaderEl = loaderRef.current;
         const countEl = countRef.current;
+        const countContainer = countContainerRef.current;
 
-        if (!loaderEl || !countEl) return;
+        if (!loaderEl || !countEl || !countContainer) return;
 
-        /* -------------------------------------------------------------------
-         * Counter Object — GSAP tweens a plain JS object; on each update we
-         * read the current value and set the DOM textContent manually.
-         * This avoids React state updates (and thus re-renders) during the
-         * fast 60fps tween.
-         * ----------------------------------------------------------------- */
         const counter = { val: 0 };
 
-        /* -------------------------------------------------------------------
-         * Main Timeline
-         *   1. Tween counter 0 → 100 over 2 seconds
-         *   2. When counter > 50, change status text to "Developing..."
-         *   3. On timeline complete → slide the loader upward and fire callback
-         * ----------------------------------------------------------------- */
         const tl = gsap.timeline({
             onComplete: () => {
-                /* Slide the loader up and off-screen */
-                gsap.to(loaderEl, {
+                /* Exit Sequence: Glitch then slide */
+                const exitTl = gsap.timeline({
+                    onComplete: () => onComplete()
+                });
+
+                /* Glitch Jitter */
+                exitTl.to(countContainer, {
+                    x: () => (Math.random() - 0.5) * 20,
+                    y: () => (Math.random() - 0.5) * 20,
+                    skewX: () => (Math.random() - 0.5) * 10,
+                    duration: 0.1,
+                    repeat: 5,
+                    ease: "none",
+                });
+
+                exitTl.to(loaderEl, {
                     yPercent: -100,
                     duration: 1.2,
                     ease: "power4.inOut",
-                    onComplete: () => {
-                        onComplete();
-                    },
                 });
             },
         });
 
         tl.to(counter, {
             val: 100,
-            duration: 2.0,
-            ease: "power2.inOut",
+            duration: 2.2,
+            ease: "power4.inOut",
             onUpdate: () => {
-                countEl.textContent = String(Math.floor(counter.val));
+                const floorVal = Math.floor(counter.val);
+                countEl.textContent = String(floorVal);
+
+                /* Subtle scale up as it reaches 100 */
+                if (countContainer) {
+                    const scale = 1 + (counter.val / 100) * 0.1;
+                    countContainer.style.transform = `scale(${scale}) rotate(-2deg)`;
+                }
             },
         });
 
-        /* Breathing / pulsing opacity on the status text */
-        gsap.fromTo(
-            statusRef.current,
-            { opacity: 0.5 },
-            { opacity: 1, duration: 0.5, repeat: -1, yoyo: true }
-        );
+        /* Breathing status text */
+        gsap.fromTo(statusRef.current, { opacity: 0.3 }, { opacity: 1, duration: 0.8, repeat: -1, yoyo: true });
 
-        /* Cleanup — kill all tweens targeting these elements on unmount */
         return () => {
             tl.kill();
-            gsap.killTweensOf(loaderEl);
         };
     }, [onComplete]);
 
-    /* -------------------------------------------------------------------------
-     * Render
-     * ----------------------------------------------------------------------- */
     return (
         <div
             id="loader"
             ref={loaderRef}
-            className="fixed inset-0 z-[100] bg-[#050505] flex flex-col items-center justify-center text-white"
+            className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center text-white overflow-hidden"
         >
-            {/* Noise grain texture for the loader background */}
-            <div className="noise-overlay opacity-20" />
+            <div className="noise-overlay opacity-30" />
 
             {/* ---- Animated Counter ---- */}
-            <div className="relative z-10 flex items-start overflow-hidden leading-none -rotate-2">
+            <div
+                ref={countContainerRef}
+                className="relative z-10 flex items-start overflow-hidden leading-none -rotate-2 will-change-transform"
+            >
                 <span
                     ref={countRef}
-                    className="font-display text-[12vw] md:text-[8vw] tracking-tighter tabular-nums block text-[#FF3D00]"
+                    className="font-display text-[15vw] md:text-[10vw] tracking-tighter tabular-nums block text-[#FF3D00]"
                 >
                     0
                 </span>
-                <span className="font-display text-[4vw] md:text-[3vw] tracking-tighter mt-[2vw] text-[#FF3D00]">
+                <span className="font-display text-[5vw] md:text-[4vw] tracking-tighter mt-[3vw] text-[#FF3D00]">
                     %
                 </span>
             </div>
 
             {/* ---- Bottom Status Bar ---- */}
-            <div className="absolute bottom-12 left-0 w-full px-8 flex justify-between items-end text-xs font-sans font-medium uppercase tracking-widest text-white/50">
+            <div className="absolute bottom-12 left-0 w-full px-8 md:px-24 flex justify-between items-end text-[10px] font-sans font-medium uppercase tracking-[0.4em] text-white/30">
                 <div className="flex flex-col gap-1">
-                    <span>Loading Assets</span>
-                    <span ref={statusRef}>Developing...</span>
+                    <span>Authenticating Reality</span>
+                    <span ref={statusRef}>Developing Khaos...</span>
                 </div>
                 <div>
-                    <span>Khaotic ©2024</span>
+                    <span>©2024 HM</span>
                 </div>
             </div>
         </div>

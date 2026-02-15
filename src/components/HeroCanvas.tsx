@@ -280,6 +280,23 @@ const HeroCanvas: React.FC = () => {
             const cols = Math.ceil(w / DOT_SPACING) + 1;
             const rows = Math.ceil(h / DOT_SPACING) + 1;
 
+            /* ---------------------------------------------------------------
+             * Theme-aware colors
+             * We read from CSS variables so the canvas matches the mood.
+             * ------------------------------------------------------------- */
+            const style = window.getComputedStyle(document.body);
+            const textColor = style.getPropertyValue("--color-text").trim();
+            const accentColor = style.getPropertyValue("--color-accent").trim();
+
+            /* Parse RGB from CSS variable strings (e.g. "rgb(255, 255, 255)") */
+            const parseRGB = (colorStr: string) => {
+                const match = colorStr.match(/\d+/g);
+                return match ? match.map(Number) : [255, 255, 255];
+            };
+
+            const [tr, tg, tb] = parseRGB(textColor);
+            const [ar, ag, ab] = parseRGB(accentColor);
+
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
                     const x = col * DOT_SPACING;
@@ -293,17 +310,13 @@ const HeroCanvas: React.FC = () => {
                     /* Proximity factor: 1.0 at cursor centre, 0.0 beyond influence radius */
                     const proximity = Math.max(0, 1 - dist / MOUSE_INFLUENCE_RADIUS);
 
-                    /* ---- Noise sampling ----
-                     * Base noise creates the flowing organic pattern.
-                     * Near the cursor, we add a second, higher-frequency noise
-                     * layer ("turbulence") that creates more chaotic detail. */
+                    /* ---- Noise sampling ---- */
                     const baseNoise = simplex3(
                         x * NOISE_SCALE,
                         y * NOISE_SCALE,
                         time
                     );
 
-                    /* Turbulence layer — only active near cursor (proximity > 0) */
                     const turbulence =
                         proximity > 0
                             ? simplex3(
@@ -313,15 +326,10 @@ const HeroCanvas: React.FC = () => {
                             ) * proximity * 0.6
                             : 0;
 
-                    /* Combined noise value in range [-1, 1] */
                     const noiseVal = baseNoise + turbulence;
-
-                    /* Normalise to [0, 1] for brightness */
                     const brightness = (noiseVal + 1) * 0.5;
 
-                    /* ---- Dot rendering ----
-                     * Base alpha is subtle (0.08–0.35). Near the cursor, alpha
-                     * and radius increase to create a "spotlight of chaos" effect. */
+                    /* ---- Dot rendering ---- */
                     const baseAlpha = 0.08 + brightness * 0.27;
                     const cursorBoost = proximity * proximity * 0.6;
                     const alpha = Math.min(1, baseAlpha + cursorBoost);
@@ -329,11 +337,10 @@ const HeroCanvas: React.FC = () => {
                     const radius =
                         BASE_DOT_RADIUS + brightness * 0.8 + proximity * 2.5;
 
-                    /* Colour mixing: white by default, blend to accent (#FF3D00)
-                     * as proximity increases — the cursor "ignites" nearby dots */
-                    const r = Math.round(255);
-                    const g = Math.round(255 - proximity * (255 - 61));
-                    const b = Math.round(255 - proximity * 255);
+                    /* Colour mixing: Interpolate between Text color and Accent color based on proximity */
+                    const r = Math.round(tr + proximity * (ar - tr));
+                    const g = Math.round(tg + proximity * (ag - tg));
+                    const b = Math.round(tb + proximity * (ab - tb));
 
                     ctx.beginPath();
                     ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -524,7 +531,7 @@ const HeroCanvas: React.FC = () => {
                     ) : (
                         <span
                             key={`${char}-${i}`}
-                            className="hero-letter inline-block text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display text-white font-bold will-change-transform"
+                            className="hero-letter inline-block text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display text-[var(--color-text)] font-bold will-change-transform"
                         >
                             {char}
                         </span>
@@ -540,7 +547,7 @@ const HeroCanvas: React.FC = () => {
              * ============================================================ */}
             <p
                 ref={taglineRef}
-                className="relative z-10 mt-4 md:mt-6 font-display text-sm md:text-base text-white/30 tracking-[0.3em] uppercase cursor-pointer transition-colors hover:text-[#FF3D00]/60 glitch-text"
+                className="relative z-10 mt-4 md:mt-6 font-display text-sm md:text-base text-[var(--color-text-dim)] tracking-[0.3em] uppercase cursor-pointer transition-colors hover:text-[var(--color-accent)] glitch-text"
                 data-text="curated chaos"
             >
                 curated chaos

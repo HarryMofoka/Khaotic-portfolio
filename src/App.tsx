@@ -59,7 +59,7 @@ import AboutCreator from "./components/AboutCreator";
 
 /* ---- Hooks ---- */
 import { useLenis } from "./hooks/useLenis";
-import { useTheme } from "./hooks/useTheme";
+import AmbientSound from "./components/AmbientSound";
 
 /* ---- Data ---- */
 import { PROJECTS } from "./data/projects";
@@ -79,11 +79,7 @@ const App: React.FC = () => {
      */
     const { lenisRef } = useLenis(false);
 
-    /**
-     * useTheme — Light/dark theme toggle.
-     * `isLight` drives the Navbar icon; `toggle` swaps the body class.
-     */
-    const { isLight, toggle: toggleTheme } = useTheme();
+
 
     /* -----------------------------------------------------------------------
      * State
@@ -113,6 +109,7 @@ const App: React.FC = () => {
         /* Start smooth scrolling */
         lenisRef.current?.start();
         document.body.style.overflow = "auto";
+        document.body.classList.add("ready");
 
         /* Intro animation timeline */
         const tl = gsap.timeline();
@@ -252,8 +249,6 @@ const App: React.FC = () => {
             <Navbar
                 isMenuOpen={isMenuOpen}
                 onMenuToggle={handleMenuToggle}
-                isLight={isLight}
-                toggleTheme={toggleTheme}
             />
             <MenuOverlay isOpen={isMenuOpen} onClose={handleMenuClose} />
 
@@ -305,6 +300,9 @@ const App: React.FC = () => {
                 }
                 onClose={handleProjectClose}
             />
+
+            {/* Phase 4D — Ambient Sound Toggle */}
+            <AmbientSound isMenuOpen={isMenuOpen} />
         </div>
     );
 };
