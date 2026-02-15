@@ -109,7 +109,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 width: "600px",
                 height: "44px",
                 background:
-                    "rgba(var(--bg-rgb, 10, 10, 10), 0.85)", // We'll assume a fallback or just use variables
+                    "var(--color-bg)", // We'll assume a fallback or just use variables
                 /* Note: Tailwind v4 variables might need a different approach for RGBA in JS.
                    We'll use a CSS-based approach or just rely on the variable directly if opacity isn't critical.
                    Actually, let's use a simpler solid color variable with alpha if possible, 

@@ -113,7 +113,7 @@ body.ready {
   left: 0;
   width: 12px;
   height: 12px;
-  background-color: #ff3d00;
+  background-color: var(--color-accent);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
@@ -366,7 +366,7 @@ html.lenis {
  * ========================================================================== */
 
 /* Midnight — Deep blue-black */
-body[data-mood="midnight"] {
+[data-mood="midnight"] {
   --bg: #02040a;
   --surface: #0a1224;
   --accent: #00d4ff;
@@ -377,7 +377,7 @@ body[data-mood="midnight"] {
 }
 
 /* Ember — Warm dark */
-body[data-mood="ember"] {
+[data-mood="ember"] {
   --bg: #0a0500;
   --surface: #1a0a00;
   --accent: #ff9500;
@@ -388,7 +388,7 @@ body[data-mood="ember"] {
 }
 
 /* Toxic — Radioactive Neon */
-body[data-mood="toxic"] {
+[data-mood="toxic"] {
   --bg: #050a00;
   --surface: #0f1a00;
   --accent: #ccff00;
@@ -399,7 +399,7 @@ body[data-mood="toxic"] {
 }
 
 /* Ghost — High-Contrast Glitch Light */
-body[data-mood="ghost"] {
+[data-mood="ghost"] {
   --bg: #f8f8f8;
   --surface: #ffffff;
   --accent: #ff003c;

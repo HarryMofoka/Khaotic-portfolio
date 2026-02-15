@@ -53,8 +53,9 @@ export const MoodProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
     }, []);
 
-    /* Sync body attribute on mount and state change */
+    /* Sync body and html attribute on mount and state change */
     useEffect(() => {
+        document.documentElement.setAttribute("data-mood", mood);
         document.body.setAttribute("data-mood", mood);
     }, [mood]);
 

@@ -187,7 +187,7 @@ const App: React.FC = () => {
      * Render
      * --------------------------------------------------------------------- */
     return (
-        <div className="w-full min-h-screen cursor-none font-sans antialiased selection:bg-[#FF3D00] selection:text-white bg-black">
+        <div className="w-full min-h-screen cursor-none font-sans antialiased selection:bg-[var(--color-accent)] selection:text-white bg-[var(--color-bg)] text-[var(--color-text)]">
             {/* ================================================================
        * SVG Filter Definitions
        * ================================================================

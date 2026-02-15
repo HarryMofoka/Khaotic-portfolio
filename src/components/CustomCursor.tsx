@@ -101,6 +101,28 @@ const CustomCursor: React.FC = () => {
         /* ---- Ink trail canvas setup ---- */
         const trailCanvas = trailCanvasRef.current;
         const trailCtx = trailCanvas?.getContext("2d");
+        const accentRef = { r: 255, g: 61, b: 0 };
+
+        /** Parse color string into RGB components */
+        const updateAccentColor = () => {
+            const style = getComputedStyle(document.documentElement);
+            const color = style.getPropertyValue("--color-accent").trim();
+            const match = color.match(/\d+/g);
+            if (match && match.length >= 3) {
+                accentRef.r = Number(match[0]);
+                accentRef.g = Number(match[1]);
+                accentRef.b = Number(match[2]);
+            } else if (color.startsWith("#")) {
+                let hex = color;
+                if (hex.length === 4) {
+                    hex = `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
+                }
+                accentRef.r = parseInt(hex.slice(1, 3), 16) || 255;
+                accentRef.g = parseInt(hex.slice(3, 5), 16) || 61;
+                accentRef.b = parseInt(hex.slice(5, 7), 16) || 0;
+            }
+        };
+        updateAccentColor();
 
         const resizeTrailCanvas = () => {
             if (!trailCanvas) return;
@@ -154,7 +176,7 @@ const CustomCursor: React.FC = () => {
                     0,
                     Math.PI * 2
                 );
-                trailCtx.fillStyle = "rgba(255, 61, 0, 0.12)";
+                trailCtx.fillStyle = `rgba(${accentRef.r}, ${accentRef.g}, ${accentRef.b}, 0.12)`;
                 trailCtx.fill();
             }
 
@@ -167,11 +189,21 @@ const CustomCursor: React.FC = () => {
         /* Set up hover detection */
         updateHoverTargets();
 
-        /* MutationObserver for dynamic content */
-        const observer = new MutationObserver(() => {
-            updateHoverTargets();
+        /* MutationObserver for dynamic content + theme updates */
+        const observer = new MutationObserver((mutations) => {
+            let shouldUpdateTargets = false;
+            let shouldUpdateColor = false;
+
+            mutations.forEach(m => {
+                if (m.type === "childList") shouldUpdateTargets = true;
+                if (m.type === "attributes" && m.attributeName === "data-mood") shouldUpdateColor = true;
+            });
+
+            if (shouldUpdateTargets) updateHoverTargets();
+            if (shouldUpdateColor) updateAccentColor();
         });
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-mood"] });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mood"] });
 
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
