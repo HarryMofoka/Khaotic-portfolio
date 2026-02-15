@@ -127,8 +127,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
             className={`fixed inset-0 z-[110] w-full h-full bg-[var(--color-bg)] transition-colors duration-500 overflow-hidden ${isVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 }`}
             style={{
-                visibility: isVisible ? "visible" : "hidden",
-                transform: "translateY(100%)"
+                visibility: isVisible ? "visible" : "hidden"
             }}
         >
             {/* ---- Fixed Close Button ---- */}
@@ -155,6 +154,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
             <div
                 ref={scrollRef}
                 className="absolute inset-0 w-full h-full overflow-y-auto overscroll-contain z-[105] bg-[var(--color-bg)]"
+                data-lenis-prevent
             >
                 {/* ==== Hero Image (80vh) ==== */}
                 <div className="w-full h-[80vh] relative">
