@@ -104,7 +104,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
             {/* Scrollable Content Area */}
             <div
                 ref={scrollContainerRef}
-                className="flex-1 w-full overflow-y-auto overflow-x-hidden pt-32 pb-48 px-6 md:px-24 scrollbar-hide"
+                className="flex-1 w-full overflow-y-auto overflow-x-hidden pt-32 pb-48 px-6 md:px-24 overscroll-contain"
             >
                 <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row gap-20 items-start">
 

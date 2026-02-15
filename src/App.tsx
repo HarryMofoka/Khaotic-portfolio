@@ -44,8 +44,10 @@ const App: React.FC = () => {
     /* -------------------------------------------------------------------------
      * Smooth Scroll (Lenis)
      * ----------------------------------------------------------------------- */
+    const lenisRef = useRef<Lenis | null>(null);
+
     useEffect(() => {
-        const lenis = new Lenis({
+        lenisRef.current = new Lenis({
             duration: 1.2,
             easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             orientation: "vertical",
@@ -57,16 +59,25 @@ const App: React.FC = () => {
         });
 
         function raf(time: number) {
-            lenis.raf(time);
+            lenisRef.current?.raf(time);
             requestAnimationFrame(raf);
         }
 
         requestAnimationFrame(raf);
 
         return () => {
-            lenis.destroy();
+            lenisRef.current?.destroy();
         };
     }, []);
+
+    // Stop/Start scroll based on overlay states
+    useEffect(() => {
+        if (isMenuOpen || isModalVisible) {
+            lenisRef.current?.stop();
+        } else {
+            lenisRef.current?.start();
+        }
+    }, [isMenuOpen, isModalVisible]);
 
     /* -------------------------------------------------------------------------
      * Handlers
