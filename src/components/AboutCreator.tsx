@@ -177,7 +177,7 @@ const AboutCreator: React.FC = () => {
                         </a>
 
                         <a
-                            href="https://www.linkedin.com/in/harry-mofoka"
+                            href="https://www.linkedin.com/in/HarryMofoka"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-sans text-[10px] uppercase tracking-[0.2em] text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors"

@@ -106,7 +106,7 @@ const Footer: React.FC = () => {
                             Instagram
                         </a>
                         <a
-                            href="https://www.linkedin.com/in/harry-mofoka"
+                            href="https://www.linkedin.com/in/HarryMofoka"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hover:text-[var(--color-accent)] transition-colors nav-link w-max font-medium"
