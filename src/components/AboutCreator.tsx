@@ -24,6 +24,8 @@ import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import portraitImg from "../assets/harry_portrait.jpg";
+
 gsap.registerPlugin(ScrollTrigger);
 
 /** Skills / tools for the infinite marquee */
@@ -95,25 +97,28 @@ const AboutCreator: React.FC = () => {
 
             {/* ---- Content Grid ---- */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-16">
-                {/* Left — Portrait placeholder */}
+                {/* Left — Portrait */}
                 <div className="about-reveal md:col-span-2">
                     <div
-                        className="aspect-[3/4] w-full rounded-sm bg-white/[0.03] border border-white/5 relative overflow-hidden"
+                        className="aspect-[3/4] w-full rounded-sm bg-black border border-white/5 relative overflow-hidden"
                         style={{ transform: "rotate(-2deg)" }}
                     >
-                        {/* Noise grain placeholder overlay */}
-                        <div className="absolute inset-0 opacity-20 noise-overlay" />
+                        {/* Portrait Image */}
+                        <img
+                            src={portraitImg}
+                            alt="Harry Mofoka"
+                            className="absolute inset-0 w-full h-full object-cover grayscale contrast-110 opacity-70"
+                        />
 
-                        {/* Initials placeholder */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="font-display text-6xl md:text-8xl text-white/[0.06]">
-                                HM
-                            </span>
-                        </div>
+                        {/* Noise grain overlay */}
+                        <div className="absolute inset-0 opacity-20 noise-overlay pointer-events-none" />
+
+                        {/* Name hint (only shows if image fails) */}
+                        <span className="sr-only">Harry Mofoka</span>
 
                         {/* Handwritten label */}
                         <span
-                            className="absolute bottom-4 left-4 font-display text-xs text-white/20"
+                            className="absolute bottom-4 left-4 font-display text-xs text-white/40 bg-black/40 px-2 py-1 backdrop-blur-sm"
                             style={{ transform: "rotate(3deg)" }}
                         >
                             Harry Mofoka, 2024
