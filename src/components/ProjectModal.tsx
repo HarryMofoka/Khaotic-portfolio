@@ -35,19 +35,19 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { Icon } from "@iconify/react";
 import gsap from "gsap";
-import type { Project } from "../types";
+import { PROJECTS } from "../data/projects";
 
 interface ProjectModalProps {
-    /** The project data to display, or null when modal is closed */
-    project: Project | null;
+    /** Whether the modal is currently transitioning in/out or visible */
+    isVisible: boolean;
+    /** The index of the project to display in the PROJECTS array */
+    projectIndex: number | null;
     /** Callback fired to close the modal */
     onClose: () => void;
 }
 
-/**
- * ProjectModal — Fullscreen scrollable detail view for a portfolio project.
- */
-const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
+const ProjectModal: React.FC<ProjectModalProps> = ({ isVisible, projectIndex, onClose }) => {
+    const project = projectIndex !== null ? PROJECTS[projectIndex] : null;
     /* -------------------------------------------------------------------------
      * Refs
      * ----------------------------------------------------------------------- */
@@ -119,15 +119,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         });
     }, [onClose]);
 
-    const isVisible = Boolean(project);
+    const effectiveVisibility = isVisible && Boolean(project);
 
     return (
         <div
             ref={modalRef}
-            className={`fixed inset-0 z-[110] w-full h-full bg-[var(--color-bg)] transition-colors duration-500 overflow-hidden ${isVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            className={`fixed inset-0 z-[110] w-full h-full bg-[var(--color-bg)] transition-colors duration-500 overflow-hidden ${effectiveVisibility ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 }`}
             style={{
-                visibility: isVisible ? "visible" : "hidden"
+                visibility: effectiveVisibility ? "visible" : "hidden"
             }}
         >
             {/* ---- Fixed Close Button ---- */}

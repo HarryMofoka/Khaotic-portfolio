@@ -14,18 +14,18 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-/* Global styles — must be imported before any component so Tailwind
- * utilities and custom CSS classes are available throughout the app. */
 import "./index.css";
-
+import { BrowserRouter } from "react-router-dom";
 import { MoodProvider } from "./context/MoodContext";
 import App from "./App";
 
 /* Mount the React app into the #root element defined in index.html */
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <MoodProvider>
-            <App />
-        </MoodProvider>
+        <BrowserRouter>
+            <MoodProvider>
+                <App />
+            </MoodProvider>
+        </BrowserRouter>
     </StrictMode>
 );

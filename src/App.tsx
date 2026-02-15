@@ -1,318 +1,175 @@
-/* ==========================================================================
- * App Component — Root of the KHAOTIC Portfolio
- * ==========================================================================
- * This is the top-level component that orchestrates the entire application.
- *
- * Architecture Overview:
- *   ┌───────────────────────────────────────────────────────┐
- *   │  App                                                  │
- *   │  ├─ SVG Warp Filter (defs — used by background orbs) │
- *   │  ├─ Background Atmospheric Orbs                       │
- *   │  ├─ NoiseOverlay (decorative film grain)              │
- *   │  ├─ CustomCursor (mouse follower)                     │
- *   │  ├─ Loader (intro loading screen)                     │
- *   │  ├─ Navbar (fixed top pill)                           │
- *   │  ├─ MenuOverlay (fullscreen nav)                      │
- *   │  ├─ <main>                                            │
- *   │  │   ├─ Annotations (scattered handwritten notes)      │
- *   │  │   ├─ HeroCanvas (generative noise field)           │
- *   │  │   ├─ Project Cards feed                            │
- *   │  │   ├─ TheLab (experiments section)                  │
- *   │  │   └─ AboutCreator ("The Creator" section)          │
- *   │  ├─ Footer                                            │
- *   │  └─ ProjectModal (detail view)                        │
- *   └───────────────────────────────────────────────────────┘
- *
- * State Management:
- *   • `isMenuOpen`       — Controls the fullscreen menu overlay visibility.
- *   • `selectedProject`  — Index of the project opened in the modal, or
- *                          `null` when the modal is closed.
- *
- * Hooks:
- *   • `useLenis`  — Initialises smooth scroll; exposes start/stop controls.
- *   • `useTheme`  — Manages light/dark mode toggle.
- *
- * GSAP Intro Animation:
- *   After the `Loader` completes, `handleLoaderComplete` is called which:
- *     1. Starts Lenis smooth scrolling
- *     2. Removes the `overflow: hidden` from the body
- *     3. Animates the navbar pill sliding in from above
- *     4. Staggers the project cards in from below with rotation
- * ========================================================================== */
-
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import Lenis from "lenis";
 import gsap from "gsap";
 
-/* ---- Components ---- */
-import NoiseOverlay from "./components/NoiseOverlay";
-import CustomCursor from "./components/CustomCursor";
-import Loader from "./components/Loader";
+/* Components */
 import Navbar from "./components/Navbar";
 import MenuOverlay from "./components/MenuOverlay";
-import ProjectCard from "./components/ProjectCard";
+import CustomCursor from "./components/CustomCursor";
+import NoiseOverlay from "./components/NoiseOverlay";
 import ProjectModal from "./components/ProjectModal";
-import Footer from "./components/Footer";
-import HeroCanvas from "./components/HeroCanvas";
-import TheLab from "./components/TheLab";
-import Annotations from "./components/Annotations";
-import AboutCreator from "./components/AboutCreator";
-
-/* ---- Hooks ---- */
-import { useLenis } from "./hooks/useLenis";
 import AmbientSound from "./components/AmbientSound";
+import Footer from "./components/Footer";
+import Loader from "./components/Loader";
 
-/* ---- Data ---- */
-import { PROJECTS } from "./data/projects";
+/* Views */
+import HomeView from "./views/HomeView";
+import WorkPage from "./views/WorkPage";
+import LabPage from "./views/LabPage";
+import AboutPage from "./views/AboutPage";
+import ContactPage from "./views/ContactPage";
 
 /**
- * App — The root component that composes all sections of the portfolio.
+ * ScrollToTop Component — Resets window scroll position on every route change.
+ * Essential for the 'multi-page' feel in an SPA.
  */
+const ScrollToTop = ({ lenis }: { lenis: Lenis | null }) => {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        // Disable browser's automatic scroll restoration on reload
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+        }
+
+        window.scrollTo(0, 0);
+        if (lenis) {
+            lenis.scrollTo(0, { immediate: true });
+        }
+    }, [pathname, lenis]);
+
+    return null;
+};
+
 const App: React.FC = () => {
-    /* -----------------------------------------------------------------------
-     * Hooks
-     * --------------------------------------------------------------------- */
-
-    /**
-     * useLenis — Smooth scroll manager.
-     * `autoStart: false` keeps scroll paused until the loader finishes.
-     * We call `lenisRef.current.start()` in `handleLoaderComplete`.
-     */
-    const { lenisRef } = useLenis(false);
-
-
-
-    /* -----------------------------------------------------------------------
+    /* -------------------------------------------------------------------------
      * State
-     * --------------------------------------------------------------------- */
-
-    /** Whether the fullscreen navigation menu overlay is visible */
+     * ----------------------------------------------------------------------- */
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [selectedProjectIndex, setSelectedProjectIndex] = useState<number | null>(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
-    /** Index of the currently selected project for the modal, or null */
-    const [selectedProject, setSelectedProject] = useState<number | null>(null);
+    /* -------------------------------------------------------------------------
+     * Smooth Scroll (Lenis)
+     * ----------------------------------------------------------------------- */
+    const lenisRef = useRef<Lenis | null>(null);
 
-    /* -----------------------------------------------------------------------
+    useEffect(() => {
+        lenisRef.current = new Lenis({
+            duration: 1.2,
+            easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: "vertical",
+            gestureOrientation: "vertical",
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            touchMultiplier: 2,
+            infinite: false,
+        });
+
+        function raf(time: number) {
+            lenisRef.current?.raf(time);
+            requestAnimationFrame(raf);
+        }
+
+        requestAnimationFrame(raf);
+
+        return () => {
+            lenisRef.current?.destroy();
+        };
+    }, []);
+
+    // Stop/Start scroll based on overlay states
+    useEffect(() => {
+        if (isMenuOpen || isModalVisible) {
+            lenisRef.current?.stop();
+        } else {
+            lenisRef.current?.start();
+        }
+    }, [isMenuOpen, isModalVisible]);
+
+    /* -------------------------------------------------------------------------
      * Handlers
-     * --------------------------------------------------------------------- */
-
-    /**
-     * handleLoaderComplete — Called when the Loader's exit animation finishes.
-     *
-     * Responsibilities:
-     *   1. Re-enable Lenis smooth scrolling
-     *   2. Remove the body overflow lock
-     *   3. Play the intro GSAP timeline:
-     *      a. Navbar pill slides in from above
-     *      b. Project cards stagger in from below with a slight rotation
-     */
+     * ----------------------------------------------------------------------- */
     const handleLoaderComplete = useCallback(() => {
-        /* Start smooth scrolling */
-        lenisRef.current?.start();
-        document.body.style.overflow = "auto";
-        document.body.classList.add("ready");
-
-        /* Intro animation timeline */
-        const tl = gsap.timeline();
-
-        /* Animate navbar pill in */
-        tl.to("#nav-pill", {
-            y: 0,
+        setIsLoaded(true);
+        // Reveal Navbar after loader completes
+        gsap.to("#nav-pill", {
             opacity: 1,
-            duration: 1.5,
-            ease: "power3.out",
+            y: 0,
+            duration: 1.2,
+            ease: "power4.out",
+            delay: 0.2
         });
+    }, []);
 
-        /* Animate project cards in with stagger */
-        tl.from(
-            ".project-wrapper",
-            {
-                y: 100,
-                opacity: 0,
-                rotate: 5,
-                duration: 1.2,
-                stagger: 0.15,
-                ease: "power3.out",
-            },
-            "-=1.0" // overlap with the navbar animation by 1 second
-        );
-    }, [lenisRef]);
+    const handleProjectOpen = useCallback((index: number) => {
+        setSelectedProjectIndex(index);
+        setIsModalVisible(true);
+    }, []);
 
-    /**
-     * handleMenuToggle — Opens or closes the fullscreen menu overlay.
-     *
-     * When opening:  Pauses Lenis scrolling.
-     * When closing:  Resumes Lenis scrolling.
-     */
+    const handleModalClose = useCallback(() => {
+        setIsModalVisible(false);
+        setTimeout(() => setSelectedProjectIndex(null), 800);
+    }, []);
+
     const handleMenuToggle = useCallback(() => {
-        setIsMenuOpen((prev) => {
-            const willOpen = !prev;
-            if (willOpen) {
-                lenisRef.current?.stop();
-            } else {
-                lenisRef.current?.start();
-            }
-            return willOpen;
-        });
-    }, [lenisRef]);
+        setIsMenuOpen((prev) => !prev);
+    }, []);
 
-    /**
-     * handleMenuClose — Explicitly closes the menu (used by MenuOverlay links).
-     */
     const handleMenuClose = useCallback(() => {
         setIsMenuOpen(false);
-        lenisRef.current?.start();
-    }, [lenisRef]);
+    }, []);
 
-    /**
-     * handleProjectOpen — Opens the project modal for the given index.
-     * Pauses Lenis scrolling while the modal is active.
-     */
-    const handleProjectOpen = useCallback(
-        (index: number) => {
-            setSelectedProject(index);
-            lenisRef.current?.stop();
-        },
-        [lenisRef]
-    );
-
-    /**
-     * handleProjectClose — Closes the project modal and resumes scrolling.
-     */
-    const handleProjectClose = useCallback(() => {
-        setSelectedProject(null);
-        lenisRef.current?.start();
-    }, [lenisRef]);
-
-    /* -----------------------------------------------------------------------
+    /* -------------------------------------------------------------------------
      * Render
-     * --------------------------------------------------------------------- */
+     * ----------------------------------------------------------------------- */
     return (
-        <div className="w-full min-h-screen cursor-none font-sans antialiased selection:bg-[var(--color-accent)] selection:text-white bg-[var(--color-bg)] text-[var(--color-text)]">
-            {/* ================================================================
-       * SVG Filter Definitions
-       * ================================================================
-       * This hidden SVG defines the `warpFilter` used by the background
-       * atmospheric orbs to create a wavy, organic distortion effect.
-       * The filter uses fractal noise fed into a displacement map.
-       * ============================================================== */}
-            <svg className="hidden">
-                <defs>
-                    <filter id="warpFilter">
-                        <feTurbulence
-                            type="fractalNoise"
-                            baseFrequency="0.005"
-                            numOctaves={2}
-                            seed={2}
-                            result="noise"
-                        />
-                        <feDisplacementMap
-                            in="SourceGraphic"
-                            in2="noise"
-                            scale={100}
-                            xChannelSelector="R"
-                            yChannelSelector="G"
-                        />
-                    </filter>
-                </defs>
-            </svg>
+        <div className="w-full min-h-screen cursor-none font-sans antialiased selection:bg-[var(--color-accent)] selection:text-white bg-[var(--color-bg)] text-[var(--color-text)] overflow-x-hidden">
+            <ScrollToTop lenis={lenisRef.current} />
 
-            {/* ================================================================
-       * Background Atmospheric Orbs
-       * ================================================================
-       * Two large, blurred circles that slowly animate (blob keyframes)
-       * behind all content. They pass through the SVG warp filter to
-       * create an organic, ever-shifting background atmosphere.
-       * ============================================================== */}
-            <div
-                className="fixed inset-0 overflow-hidden pointer-events-none z-0"
-                style={{ filter: "url(#warpFilter)", transform: "scale(1.1)" }}
-            >
-                {/* Orange orb — top-left */}
-                <div className="orb w-[50vw] h-[50vw] bg-[#FF3D00] top-[-20%] left-[-10%] opacity-[0.08] animate-blob rounded-full absolute filter blur-[100px]" />
-                {/* White orb — bottom-right, delayed animation */}
-                <div
-                    className="orb w-[60vw] h-[60vw] bg-white bottom-[-10%] right-[-10%] opacity-[0.05] animate-blob rounded-full absolute filter blur-[100px]"
-                    style={{ animationDelay: "-5s" }}
-                />
-            </div>
-
-            {/* ================================================================
-       * Global Overlays & UI
-       * ============================================================== */}
+            {/* Global Distortion Overlay — static noise layer */}
             <NoiseOverlay />
+
+            {/* Custom Interactive Cursor */}
             <CustomCursor />
+
+            {/* Ambient Soundscape Controller */}
+            <AmbientSound />
+
+            {/* Navigation Bar */}
+            <Navbar isMenuOpen={isMenuOpen} onMenuToggle={handleMenuToggle} />
+
+            {/* Fullscreen Menu Overlay */}
+            <MenuOverlay
+                isOpen={isMenuOpen}
+                onClose={handleMenuClose}
+            />
+
+            {/* Intro Loader */}
             <Loader onComplete={handleLoaderComplete} />
 
-            {/* ================================================================
-       * Navigation
-       * ============================================================== */}
-            <Navbar
-                isMenuOpen={isMenuOpen}
-                onMenuToggle={handleMenuToggle}
-            />
-            <MenuOverlay isOpen={isMenuOpen} onClose={handleMenuClose} />
+            {/* Page Transitions & Content — only show if loaded */}
+            <div className={`transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                <Routes>
+                    <Route path="/" element={<HomeView onProjectOpen={handleProjectOpen} />} />
+                    <Route path="/work" element={<WorkPage />} />
+                    <Route path="/lab" element={<LabPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                </Routes>
+            </div>
 
-            {/* ================================================================
-       * Main Content — Project Cards Feed
-       * ================================================================
-       * A vertical feed of film-style project cards. The top spacer
-       * (30-40vh) pushes the first card below the viewport top so the
-       * navbar has room.
-       * ============================================================== */}
-            <main className="relative z-10 w-full flex flex-col items-center pb-32">
-                {/* Handwritten annotations — scattered on desktop only */}
-                <Annotations />
-
-                {/* Hero — Interactive generative noise canvas */}
-                <HeroCanvas />
-
-                {/* Phase 8 — Section Header for Stories */}
-                <div className="w-full max-w-7xl px-6 md:px-12 mt-32 mb-16 flex flex-col items-center">
-                    <h2 className="font-display text-4xl md:text-6xl text-[var(--color-accent)] -rotate-2 select-none">
-                        Stories About Harry
-                    </h2>
-                    <p className="font-sans text-[10px] uppercase tracking-[0.4em] text-[var(--color-text-dim)]/40 mt-4">
-                        A fragmented diary of controlled chaos
-                    </p>
-                </div>
-
-                {/* Render one ProjectCard per entry in the data array */}
-                {PROJECTS.map((project, index) => (
-                    <ProjectCard
-                        key={project.title}
-                        project={project}
-                        index={index}
-                        onClick={() => handleProjectOpen(index)}
-                    />
-                ))}
-
-                {/* Phase 3A — The Lab experiments section */}
-                <TheLab />
-
-                {/* Phase 3C — About: The Creator */}
-                <AboutCreator />
-            </main>
-
-            {/* ================================================================
-       * Footer
-       * ============================================================== */}
-            <Footer />
-
-            {/* ================================================================
-       * Project Detail Modal
-       * ================================================================
-       * Rendered at the end of the DOM tree so it layers on top of
-       * everything. When `selectedProject` is null, the modal is hidden.
-       * ============================================================== */}
+            {/* Global Project Detail Modal — renders over any page */}
             <ProjectModal
-                project={
-                    selectedProject !== null ? PROJECTS[selectedProject] : null
-                }
-                onClose={handleProjectClose}
+                isVisible={isModalVisible}
+                projectIndex={selectedProjectIndex}
+                onClose={handleModalClose}
             />
 
-            {/* Phase 4D — Ambient Sound Toggle */}
-            <AmbientSound isMenuOpen={isMenuOpen} />
+            {/* Global Footer */}
+            <Footer />
         </div>
     );
 };
