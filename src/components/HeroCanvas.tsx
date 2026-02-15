@@ -554,11 +554,7 @@ const HeroCanvas: React.FC = () => {
              * visual transition into the first project card below.
              * ============================================================ */}
             <div
-                className="absolute bottom-0 left-0 w-full h-32 md:h-48 pointer-events-none z-20"
-                style={{
-                    background:
-                        "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 50%, rgb(0,0,0) 100%)",
-                }}
+                className="hero-fade absolute bottom-0 left-0 w-full h-32 md:h-48 pointer-events-none z-20"
             />
         </div>
     );
