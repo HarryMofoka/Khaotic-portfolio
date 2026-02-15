@@ -24,11 +24,21 @@ import ContactPage from "./views/ContactPage";
  * ScrollToTop Component — Resets window scroll position on every route change.
  * Essential for the 'multi-page' feel in an SPA.
  */
-const ScrollToTop = () => {
+const ScrollToTop = ({ lenis }: { lenis: Lenis | null }) => {
     const { pathname } = useLocation();
+
     useEffect(() => {
+        // Disable browser's automatic scroll restoration on reload
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+        }
+
         window.scrollTo(0, 0);
-    }, [pathname]);
+        if (lenis) {
+            lenis.scrollTo(0, { immediate: true });
+        }
+    }, [pathname, lenis]);
+
     return null;
 };
 
@@ -117,7 +127,7 @@ const App: React.FC = () => {
      * ----------------------------------------------------------------------- */
     return (
         <div className="w-full min-h-screen cursor-none font-sans antialiased selection:bg-[var(--color-accent)] selection:text-white bg-[var(--color-bg)] text-[var(--color-text)] overflow-x-hidden">
-            <ScrollToTop />
+            <ScrollToTop lenis={lenisRef.current} />
 
             {/* Global Distortion Overlay — static noise layer */}
             <NoiseOverlay />
