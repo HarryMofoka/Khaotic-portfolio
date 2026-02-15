@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
-import { useMood, MOODS } from "../hooks/useMood";
+import { useMood, MOODS } from "../context/MoodContext";
 
 /** Navigation link labels */
 const MENU_ITEMS = ["Index", "Work", "Lab", "About", "Contact"];

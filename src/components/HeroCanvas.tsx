@@ -29,6 +29,7 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMood } from "../context/MoodContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -214,6 +215,7 @@ const MOUSE_INFLUENCE_RADIUS = 250;
  * HeroCanvas — Fullscreen generative noise field that reacts to the mouse.
  */
 const HeroCanvas: React.FC = () => {
+    const { mood } = useMood();
     /* -------------------------------------------------------------------------
      * Refs
      * ----------------------------------------------------------------------- */
@@ -435,7 +437,7 @@ const HeroCanvas: React.FC = () => {
             resizeObserver.disconnect();
             moodObserver.disconnect();
         };
-    }, []);
+    }, [mood]);
 
     /* -------------------------------------------------------------------------
      * Ref for the letter container — animated by GSAP ScrollTrigger

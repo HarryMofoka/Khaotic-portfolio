@@ -367,9 +367,9 @@ html.lenis {
 
 /* Midnight — Deep blue-black */
 body[data-mood="midnight"] {
-  --bg: #040810;
+  --bg: #02040a;
   --surface: #0a1224;
-  --accent: #4d9eff;
+  --accent: #00d4ff;
   --secondary: #60a5fa;
   --text: #e0f2fe;
   --text-dim: rgba(224, 242, 254, 0.5);
@@ -378,11 +378,38 @@ body[data-mood="midnight"] {
 
 /* Ember — Warm dark */
 body[data-mood="ember"] {
-  --bg: #0a0600;
-  --surface: #1a1000;
+  --bg: #0a0500;
+  --surface: #1a0a00;
   --accent: #ff9500;
   --secondary: #f59e0b;
   --text: #fffbeb;
   --text-dim: rgba(255, 251, 235, 0.5);
   --border: rgba(245, 158, 11, 0.1);
+}
+
+/* Toxic — Radioactive Neon */
+body[data-mood="toxic"] {
+  --bg: #050a00;
+  --surface: #0f1a00;
+  --accent: #ccff00;
+  --secondary: #a3e635;
+  --text: #f7fee7;
+  --text-dim: rgba(247, 254, 231, 0.5);
+  --border: rgba(163, 230, 53, 0.1);
+}
+
+/* Ghost — High-Contrast Glitch Light */
+body[data-mood="ghost"] {
+  --bg: #f8f8f8;
+  --surface: #ffffff;
+  --accent: #ff003c;
+  --secondary: #333333;
+  --text: #0a0a0a;
+  --text-dim: rgba(10, 10, 10, 0.6);
+  --border: rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth background accent transitions */
+.orb {
+  transition: background-color 1s ease-in-out, opacity 1s ease-in-out;
 }
