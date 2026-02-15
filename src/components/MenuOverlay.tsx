@@ -88,7 +88,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
     return (
         <div
             ref={overlayRef}
-            className={`fixed inset-0 z-[100] bg-[var(--color-bg)]/98 backdrop-blur-3xl flex flex-col md:flex-row items-center justify-center pointer-events-none opacity-0 invisible overflow-hidden ${isOpen ? 'pointer-events-auto' : ''}`}
+            className={`fixed inset-0 z-[100] bg-[var(--color-bg)]/98 backdrop-blur-3xl flex flex-col md:flex-row items-center justify-center overflow-hidden ${isOpen ? 'pointer-events-auto' : 'pointer-events-none opacity-0 invisible'}`}
         >
             {/* Navigation Grid */}
             <div className="flex flex-col gap-6 md:gap-10 items-center md:items-start px-12 md:px-24 w-full max-w-7xl mx-auto relative z-10">
