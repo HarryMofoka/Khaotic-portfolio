@@ -119,11 +119,17 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         });
     }, [onClose]);
 
+    const isVisible = Boolean(project);
+
     return (
         <div
             ref={modalRef}
-            className="fixed inset-0 z-[110] w-full h-full bg-[var(--color-bg)] translate-y-[100%] opacity-0 will-change-transform transition-colors duration-500 pointer-events-auto"
-            style={{ display: "none" }}
+            className={`fixed inset-0 z-[110] w-full h-full bg-[var(--color-bg)] transition-colors duration-500 overflow-hidden ${isVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                }`}
+            style={{
+                visibility: isVisible ? "visible" : "hidden",
+                transform: "translateY(100%)"
+            }}
         >
             {/* ---- Fixed Close Button ---- */}
             <div className="fixed top-0 left-0 w-full p-6 md:p-8 flex justify-between z-[110] pointer-events-none">
