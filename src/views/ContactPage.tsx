@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 const CONTACT_LINKS = [
     { label: "Email", value: "mofokaharry@gmail.com", icon: "simple-icons:gmail", href: "mailto:mofokaharry@gmail.com" },
     { label: "Instagram", value: "@kalm.harry", icon: "simple-icons:instagram", href: "https://www.instagram.com/kalm.harry/" },
-    { label: "GitHub", value: "harry-mofoka", icon: "simple-icons:github", href: "https://github.com/harry-mofoka" }
+    { label: "GitHub", value: "HarryMofoka", icon: "simple-icons:github", href: "https://github.com/HarryMofoka" }
 ];
 
 const ContactPage: React.FC = () => {

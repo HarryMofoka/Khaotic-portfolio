@@ -151,7 +151,7 @@ const MenuOverlay: React.FC<MenuOverlayProps> = ({ isOpen, onClose }) => {
                                 <a href="https://www.instagram.com/kalm.harry/" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
                                     <Icon icon="simple-icons:instagram" width={24} />
                                 </a>
-                                <a href="https://github.com/harry-mofoka" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
+                                <a href="https://github.com/HarryMofoka" target="_blank" rel="noreferrer" className="text-[var(--color-text-dim)] hover:text-[var(--color-accent)] transition-colors">
                                     <Icon icon="simple-icons:github" width={24} />
                                 </a>
                             </div>
