@@ -80,7 +80,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
             modal.style.display = "block";
 
             /* Slide up from below */
-            gsap.to(modal, { y: "0%", duration: 0.8, ease: "power3.inOut" });
+            gsap.to(modal, { y: "0%", opacity: 1, duration: 0.8, ease: "power3.inOut" });
 
             /* Stagger content fade-in */
             gsap.fromTo(
@@ -122,7 +122,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
     return (
         <div
             ref={modalRef}
-            className="fixed inset-0 z-[100] w-full h-full bg-[var(--color-bg)] translate-y-[100%] will-change-transform transition-colors duration-500"
+            className="fixed inset-0 z-[110] w-full h-full bg-[var(--color-bg)] translate-y-[100%] opacity-0 will-change-transform transition-colors duration-500 pointer-events-auto"
             style={{ display: "none" }}
         >
             {/* ---- Fixed Close Button ---- */}

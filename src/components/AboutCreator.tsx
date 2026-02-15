@@ -160,7 +160,7 @@ const AboutCreator: React.FC = () => {
                     {/* Contact CTA */}
                     <div className="flex flex-wrap items-center gap-6 mt-4">
                         <a
-                            href="mailto:hello@harrymofoka.com"
+                            href="mailto:error404@harrymofoka.com"
                             className="inline-flex items-center gap-2 font-sans text-xs uppercase tracking-[0.2em] text-[var(--color-accent)] hover:text-[var(--color-text)] transition-colors duration-300 nav-link"
                         >
                             <span>Get in touch</span>

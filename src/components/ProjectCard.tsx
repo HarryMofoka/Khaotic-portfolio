@@ -135,11 +135,23 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     }, []);
 
     /* -------------------------------------------------------------------------
-     * handleClick — Prevent default and delegate to parent.
+     * handleClick — Provide visual feedback and delegate to parent.
      * ----------------------------------------------------------------------- */
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
-            e.preventDefault();
+            e.stopPropagation();
+            /* Immediate visual feedback — slight scale down/up */
+            const el = wrapperRef.current;
+            if (el) {
+                gsap.to(el, {
+                    scale: 0.98,
+                    duration: 0.1,
+                    onComplete: () => {
+                        gsap.to(el, { scale: 1, duration: 0.2, ease: "power2.out" });
+                    }
+                });
+            }
+
             onClick();
         },
         [onClick]
@@ -158,7 +170,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     return (
         <div
             ref={wrapperRef}
-            className="project-wrapper group relative w-full flex flex-col items-center mb-[15vh]"
+            className="project-wrapper group relative w-full flex flex-col items-center mb-[15vh] pointer-events-auto z-10"
             onClick={handleClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
